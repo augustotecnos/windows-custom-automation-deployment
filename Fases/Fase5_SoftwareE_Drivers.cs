@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using INSTALADOR_SOFTWARE_SE;
 
 namespace INSTALADOR_SOFTWARE_SE.Fases
 {
@@ -69,7 +70,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
             string perfilId = _estadoAtual["PerfilId"];
             string setorId = _estadoAtual["SetorId"];
             string nomeArquivoPerfil = $"{perfilId}_{setorId}.json";
-            string caminhoCompletoPerfil = Path.Combine(@"\\seu-servidor\DeploymentShare$\Config", nomeArquivoPerfil);
+            string caminhoCompletoPerfil = Path.Combine(AppConfig.DeploymentSharePath, "Config", nomeArquivoPerfil);
 
             _logCallback($"Carregando perfil de software de: {caminhoCompletoPerfil}");
             if (!File.Exists(caminhoCompletoPerfil))
@@ -154,13 +155,13 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private void VerificarEInstalarDrivers()
         {
             _logCallback("--- Iniciando verificação final de drivers ---");
-            string scriptPath = @"\\seu-servidor\DeploymentShare$\Scripts\Test-DriverStatus.ps1";
+            string scriptPath = Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Test-DriverStatus.ps1");
             int exitCode = ExecutarComandoProcesso("powershell.exe", $"-ExecutionPolicy Bypass -File \"{scriptPath}\"");
 
             if (exitCode == 1) // Código '1' que definimos para "problemas encontrados"
             {
                 _logCallback("Problemas de driver detectados. Acionando Lenovo System Update como fallback...");
-                string scriptLenovoPath = @"\\seu-servidor\DeploymentShare$\Scripts\Invoke-LenovoSystemUpdate.ps1";
+                string scriptLenovoPath = Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Invoke-LenovoSystemUpdate.ps1");
                 ExecutarComandoProcesso("powershell.exe", $"-ExecutionPolicy Bypass -File \"{scriptLenovoPath}\"");
                 _logCallback("Lenovo System Update concluído. Recomenda-se uma verificação manual se os problemas persistirem.");
             }
