@@ -1,0 +1,14 @@
+# Ignore build directories
+bin/
+obj/
+# Ignore Visual Studio files
+*.user
+*.vs/
+# Ignore compiled binaries
+*.exe
+*.dll
+*.pdb
+# Ignore other common temporary files
+packages/
+TestResults/
+*.cache
