@@ -104,7 +104,7 @@ namespace INSTALADOR_SOFTWARE_SE
             }
             catch (Exception ex)
             {
-                _logCallback($"ERRO ao ler master_config.json: {ex.Message}");
+                AtualizarStatusProgresso($"ERRO ao ler master_config.json: {ex.Message}");
                 return null;
             }
         }
