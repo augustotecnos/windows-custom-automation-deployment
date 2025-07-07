@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using INSTALADOR_SOFTWARE_SE;
 
 namespace INSTALADOR_SOFTWARE_SE.Fases
 {
@@ -13,7 +14,8 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
     {
         private readonly GerenciadorDeEstado _gerenciadorDeEstado;
         private readonly Action<string> _logCallback;
-        private const string CaminhoScriptFinalizacao = @"\\seu-servidor\DeploymentShare$\Scripts\Finalize-System.ps1";
+        private static readonly string CaminhoScriptFinalizacao =
+            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Finalize-System.ps1");
 
         public Fase7_Limpeza(GerenciadorDeEstado gerenciadorDeEstado, Action<string> logCallback)
         {

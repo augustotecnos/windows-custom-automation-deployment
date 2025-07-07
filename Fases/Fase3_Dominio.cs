@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using INSTALADOR_SOFTWARE_SE;
 
 namespace INSTALADOR_SOFTWARE_SE.Fases
 {
@@ -15,7 +16,8 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly GerenciadorDeEstado _gerenciadorDeEstado;
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
-        private const string CaminhoScriptDominio = @"\\seu-servidor\DeploymentShare$\Scripts\Invoke-SecureDomainJoin.ps1";
+        private static readonly string CaminhoScriptDominio =
+            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Invoke-SecureDomainJoin.ps1");
 
         public Fase3_Dominio(GerenciadorDeEstado gerenciadorDeEstado, Dictionary<string, string> estadoAtual, Action<string> logCallback)
         {

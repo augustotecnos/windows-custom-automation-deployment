@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using INSTALADOR_SOFTWARE_SE;
 
 namespace INSTALADOR_SOFTWARE_SE.Fases
 {
@@ -15,7 +16,8 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly GerenciadorDeEstado _gerenciadorDeEstado;
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
-        private const string CaminhoScriptUpdate = @"\\seu-servidor\DeploymentShare$\Scripts\Invoke-WindowsUpdate.ps1";
+        private static readonly string CaminhoScriptUpdate =
+            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Invoke-WindowsUpdate.ps1");
 
         public Fase4_Update(GerenciadorDeEstado gerenciadorDeEstado, Dictionary<string, string> estadoAtual, Action<string> logCallback)
         {
