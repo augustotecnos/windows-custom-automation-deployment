@@ -1,0 +1,17 @@
+{
+  "unidades": [
+    { "nomeExibicao": "Matriz (Ingressar no Domínio)", "id": "matriz" },
+    { "nomeExibicao": "Filial - SE", "id": "filial_se" },
+    { "nomeExibicao": "Filial - BA (Expansão)", "id": "filial_ba" }
+  ],
+  "setores": [
+    { "nomeExibicao": "TI - Tecnologia", "id": "ti" },
+    { "nomeExibicao": "Financeiro", "id": "financeiro" },
+    { "nomeExibicao": "Vendas", "id": "vendas" }
+  ],
+  "usuariosFinais": [
+    { "nomeExibicao": "Augusto Santos - TI", "loginName": "augusto.santos" },
+    { "nomeExibicao": "Maria Oliveira - Financeiro", "loginName": "maria.oliveira" },
+    { "nomeExibicao": "João Pereira - Vendas", "loginName": "joao.pereira" }
+  ]
+}

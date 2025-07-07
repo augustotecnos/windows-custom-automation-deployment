@@ -1,0 +1,32 @@
+{
+  "setor": "TI - Tecnologia",
+  "winget_packages": [
+    "Microsoft.VisualStudioCode",
+    "Docker.DockerDesktop",
+    "Postman.Postman"
+  ],
+  "legacy_installers": [
+    {
+      "name": "Sistema Interno de Chamados",
+      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\HelpDeskSystem.msi",
+      "type": "msi",
+      "args": "/qn /norestart"
+    },
+    {
+      "name": "Ferramenta de Acesso Legado",
+      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\LegacyAccessTool.exe",
+      "type": "exe",
+      "args": "/S /VERYSILENT"
+    },
+    {
+      "name": "Script de Configuração de Rede",
+      "path": "\\seu-servidor\\DeploymentShare$\\Scripts\\ConfigureVlan-TI.bat",
+      "type": "bat",
+      "args": ""
+    }
+  ],
+  "printers": [
+    "\\servidor-impressao\IMP_TI_01",
+    "\\servidor-impressao\PLOTTER_PROJETOS"
+  ]
+}
