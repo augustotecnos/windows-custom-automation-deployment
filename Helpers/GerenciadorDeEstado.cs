@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace INSTALADOR_SOFTWARE_SE.Helpers
 {
