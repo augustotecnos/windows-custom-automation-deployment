@@ -1,0 +1,25 @@
+# .NET build artifacts
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Logs
+*.log
+
+# Resharper
+_ReSharper*/
+
+# Rider
+.idea/
+
+# Other
+*.sqlite
