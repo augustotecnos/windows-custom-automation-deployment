@@ -1,14 +1,28 @@
-# Ignore build directories
+
+# .NET build artifacts
 bin/
 obj/
-# Ignore Visual Studio files
+
+# Visual Studio files
+.vs/
 *.user
-*.vs/
-# Ignore compiled binaries
-*.exe
-*.dll
-*.pdb
-# Ignore other common temporary files
-packages/
-TestResults/
+*.suo
 *.cache
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Logs
+*.log
+
+# Resharper
+_ReSharper*/
+
+# Rider
+.idea/
+
+# Other
+*.sqlite
+
+

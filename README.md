@@ -96,8 +96,9 @@ App --> Client : Configura SO
 3.  Na raiz do pendrive, crie a estrutura de pastas: `$OEM$\$$\Support`.
 
 4.  Compile a aplicação C# em modo `Release`.
-5.  Copie `network_config.sample.json` para `network_config.json` e ajuste os IPs conforme a sua rede.
+5.  Copie **todo o conteúdo da pasta `bin/Release`** da sua aplicação C# e o arquivo `network_config.json` (gerado a partir do `network_config.sample.json`) para dentro da pasta `Support` no pendrive.
 6.  Copie **todo o conteúdo da pasta `bin/Release`** da sua aplicação C# e o arquivo `network_config.json` (criado a partir de `network_config.sample.json` e ajustado para sua rede) para dentro da pasta `Support` no pendrive.
+
 
 ### 3. Processo de Provisionamento
 
@@ -136,6 +137,7 @@ A maior vantagem deste projeto é a sua flexibilidade. Para adaptar a automaçã
     -   Instaladores na lista `legacyInstallers`.
     * Caminhos de impressora na lista `printers`.
     * Grupos locais na lista `localGroups`.
+    -   Copie o arquivo `network_config.sample.json` para `network_config.json` e ajuste os endereços IP conforme sua rede.
 
 
 **Exemplo:** Para adicionar o Notepad++ ao perfil de TI, basta adicionar a linha `"Notepad++.Notepad++"` à lista `wingetPackages` no arquivo `matriz_ti.json`. A mudança terá efeito imediato na próxima máquina provisionada.
@@ -250,12 +252,9 @@ App --> Client : Configures OS
 1.  Use the Microsoft Media Creation Tool or Rufus to create a bootable Windows installation USB drive.
 2.  Copy your refined `autounattend.xml` file to the root of the USB drive.
 3.  In the root of the USB drive, create the folder structure: `$OEM$\$$\Support`.
-
-5.  Copy `network_config.sample.json` to `network_config.json` and edit the IP settings to match your network.
-6.  Copy the **entire contents of the `bin/Release` folder** from your C# project and the `network_config.json` file (created from `network_config.sample.json` and adjusted to your network) into the `Support` folder on the USB drive.
-
-4.  Edit the `AppConfig.cs` file so that `DeploymentSharePath` points to your share, then compile the C# application in `Release` mode.
-5.  Copy the **entire contents of the `bin/Release` folder** from your C# project and the `network_config.json` file into the `Support` folder on the USB drive.
+4.  Compile the C# application in `Release` mode.
+5.  Copy the **entire contents of the `bin/Release` folder** from your C# project and the `network_config.json` file (created from `network_config.sample.json`) into the `Support` folder on the USB drive.
+7.  Copy the **entire contents of the `bin/Release` folder** from your C# project and the `network_config.json` file (created from `network_config.sample.json` and adjusted to your network) into the `Support` folder on the USB drive.
 
 
 ### 3. Provisioning Process
@@ -295,6 +294,7 @@ The greatest advantage of this project is its flexibility. To adapt the automati
     -   Installers in the `legacyInstallers` list.
     -   Printer paths in the `printers` list.
     -   Local groups in the `localGroups` list.
+    -   Copy `network_config.sample.json` to `network_config.json` and edit the IP addresses to match your network.
 
     -   Edit `network_config.sample.json` with your network IP information and save it as `network_config.json`.
 
