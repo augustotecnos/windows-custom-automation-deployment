@@ -1,3 +1,6 @@
+using System;
+using System.Windows.Forms;
+
 namespace INSTALADOR_SOFTWARE_SE
 {
     /// <summary>
@@ -26,5 +29,4 @@ namespace INSTALADOR_SOFTWARE_SE
             // A aplicação permanecerá em execução, respondendo a eventos (cliques, etc.), até que este formulário seja fechado.
             Application.Run(formularioPrincipal);
         }
-    }
-}
+    }}
