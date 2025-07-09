@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INSTALADOR-SOFTWARE-SE", "INSTALADOR-SOFTWARE-SE.csproj", "{C55163EA-8925-62CE-53A1-F0C1FB0CC5A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INSTALADOR-SOFTWARE-SE", "INSTALADOR-SOFTWARE-SE_V20\INSTALADOR-SOFTWARE-SE.csproj", "{C55163EA-8925-62CE-53A1-F0C1FB0CC5A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
