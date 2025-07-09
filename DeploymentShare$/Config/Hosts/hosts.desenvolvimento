@@ -1,0 +1,7 @@
+# HOSTS personalizado para ambiente de desenvolvimento
+127.0.0.1   api.dev.local
+127.0.0.1   auth.dev.local
+127.0.0.1   database.dev.local
+192.168.10.50   portal.staging.sepromotora.local
+192.168.10.51   api.staging.sepromotora.local
+192.168.10.52   reports.staging.sepromotora.local

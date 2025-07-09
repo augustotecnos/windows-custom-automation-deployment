@@ -1,32 +1,46 @@
 {
-  "setor": "TI - Tecnologia",
-  "winget_packages": [
+  "nomePerfil": "Matriz - Padrão de TI",
+  "wingetPackages": [
     "Microsoft.VisualStudioCode",
     "Docker.DockerDesktop",
-    "Postman.Postman"
+    "Postman.Postman",
+    "7zip.7zip",
+    "Microsoft.WindowsTerminal",
+    "Git.Git",
+    "Microsoft.PowerToys",
+    "ShareX.ShareX"
   ],
-  "legacy_installers": [
+  "legacyInstallers": [
     {
-      "name": "Sistema Interno de Chamados",
-      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\HelpDeskSystem.msi",
-      "type": "msi",
-      "args": "/qn /norestart"
+      "nome": "Sistema Interno de Chamados (HelpDesk Admin Console)",
+      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\HelpDeskSystem_Admin_v2.1.msi",
+      "tipo": "msi",
+      "argumentos": "/qn /norestart"
     },
     {
-      "name": "Ferramenta de Acesso Legado",
-      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\LegacyAccessTool.exe",
-      "type": "exe",
-      "args": "/S /VERYSILENT"
+      "nome": "Cliente de Banco de Dados Oracle (SQL Developer)",
+      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\OracleClient_Setup.exe",
+      "tipo": "exe",
+      "argumentos": "/S /VERYSILENT /NORESTART"
     },
     {
-      "name": "Script de Configuração de Rede",
-      "path": "\\seu-servidor\\DeploymentShare$\\Scripts\\ConfigureVlan-TI.bat",
-      "type": "bat",
-      "args": ""
+      "nome": "Script de Mapeamento de Pastas de Rede - TI",
+      "path": "\\seu-servidor\\DeploymentShare$\\Scripts\\Map-TI-Drives.bat",
+      "tipo": "bat",
+      "argumentos": ""
     }
   ],
   "printers": [
-    "\\servidor-impressao\IMP_TI_01",
-    "\\servidor-impressao\PLOTTER_PROJETOS"
-  ]
-}
+    "\\servidor-impressao\\IMP_TI_COLOR_A3",
+    "\\servidor-impressao\\PLOTTER_PROJETOS_HP"
+  ],
+  "hostsFile": "hosts.desenvolvimento",
+  "vpnConfig": {
+    "installerPath": "\\seu-servidor\\DeploymentShare$\\Applications\\VPN\\OpenVPN_2.5.8_amd64.msi",
+    "configFilePath": "\\seu-servidor\\DeploymentShare$\\Config\\VPN\\config_ti_dev.ovpn"
+  },
+  "localGroups": [
+    "Remote Desktop Users",
+    "Hyper-V Administrators",
+    "Administrators"
+  ]}

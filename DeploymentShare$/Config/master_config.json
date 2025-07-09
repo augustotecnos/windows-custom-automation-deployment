@@ -1,17 +1,67 @@
 {
   "unidades": [
-    { "nomeExibicao": "Matriz (Ingressar no Domínio)", "id": "matriz" },
-    { "nomeExibicao": "Filial - SE", "id": "filial_se" },
-    { "nomeExibicao": "Filial - BA (Expansão)", "id": "filial_ba" }
+    {
+      "nomeExibicao": "Matriz (Ingressar no Domínio)",
+      "id": "matriz",
+      "namingPrefix": "sepro"
+    },
+    {
+      "nomeExibicao": "Filial - Sergipe",
+      "id": "filial_se",
+      "namingPrefix": "se-se"
+    },
+    {
+      "nomeExibicao": "Filial - Bahia (Expansão)",
+      "id": "filial_ba",
+      "namingPrefix": "se-ba"
+    },
+    {
+      "nomeExibicao": "Standalone (Sem Domínio)",
+      "id": "standalone",
+      "namingPrefix": "st-pc"
+    }
   ],
   "setores": [
-    { "nomeExibicao": "TI - Tecnologia", "id": "ti" },
-    { "nomeExibicao": "Financeiro", "id": "financeiro" },
-    { "nomeExibicao": "Vendas", "id": "vendas" }
+    {
+      "nomeExibicao": "TI - Tecnologia",
+      "id": "ti"
+    },
+    {
+      "nomeExibicao": "Financeiro",
+      "id": "financeiro"
+    },
+    {
+      "nomeExibicao": "Vendas e Comercial",
+      "id": "vendas"
+    },
+    {
+      "nomeExibicao": "Recursos Humanos",
+      "id": "rh"
+    },
+    {
+      "nomeExibicao": "Operacional Padrão",
+      "id": "operacional"
+    }
   ],
   "usuariosFinais": [
-    { "nomeExibicao": "Augusto Santos - TI", "loginName": "augusto.santos" },
-    { "nomeExibicao": "Maria Oliveira - Financeiro", "loginName": "maria.oliveira" },
-    { "nomeExibicao": "João Pereira - Vendas", "loginName": "joao.pereira" }
-  ]
-}
+    {
+      "nomeExibicao": "Augusto Santos - TI",
+      "loginName": "augusto.santos"
+    },
+    {
+      "nomeExibicao": "Maria Oliveira - Financeiro",
+      "loginName": "maria.oliveira"
+    },
+    {
+      "nomeExibicao": "João Pereira - Vendas",
+      "loginName": "joao.pereira"
+    },
+    {
+      "nomeExibicao": "Ana Costa - RH",
+      "loginName": "ana.costa"
+    },
+    {
+      "nomeExibicao": "Carlos Souza - Operacional",
+      "loginName": "carlos.souza"
+    }
+  ]}
