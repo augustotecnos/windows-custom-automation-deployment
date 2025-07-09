@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Windows.Forms; // Usado apenas para Application.StartupPath
+using System;
 
 namespace INSTALADOR_SOFTWARE_SE.Helpers
 {
