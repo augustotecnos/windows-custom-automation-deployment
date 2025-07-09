@@ -49,7 +49,10 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
                 string modoNomenclatura = _estadoAtual["ModoNomenclatura"];
 
                 // --- BIFURCAÇÃO DA LÓGICA: MÁQUINA NOVA VS. REFORMATAÇÃO ---
-                if (modoNomenclatura == "ManterExistente")
+                if (string.Equals(
+                        modoNomenclatura,
+                        "ManterExistente",
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     string nomeParaManter = _estadoAtual["NomeComputadorSelecionado"];
                     _logCallback($"Modo de reformatação selecionado para a máquina: {nomeParaManter}.");
