@@ -15,7 +15,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly GerenciadorDeEstado _gerenciadorDeEstado;
         private readonly Action<string> _logCallback;
         private static readonly string CaminhoScriptFinalizacao =
-            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Finalize-System.ps1");
+            Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Scripts", "Finalize-System.ps1");
 
         public Fase7_Limpeza(GerenciadorDeEstado gerenciadorDeEstado, Action<string> logCallback)
         {

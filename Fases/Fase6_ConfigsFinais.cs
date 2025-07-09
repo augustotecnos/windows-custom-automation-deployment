@@ -20,7 +20,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
         private static readonly string CaminhoScripts =
-            Path.Combine(AppConfig.DeploymentSharePath, "Scripts");
+            Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Scripts");
 
         public Fase6_ConfigsFinais(GerenciadorDeEstado gerenciadorDeEstado, Dictionary<string, string> estadoAtual, Action<string> logCallback)
         {
@@ -69,7 +69,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
             string perfilId = _estadoAtual["PerfilId"];
             string setorId = _estadoAtual["SetorId"];
             string nomeArquivoPerfil = $"{perfilId}_{setorId}.json";
-            string caminhoCompletoPerfil = Path.Combine(AppConfig.DeploymentSharePath, "Config", nomeArquivoPerfil);
+            string caminhoCompletoPerfil = Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Config", nomeArquivoPerfil);
             
             _logCallback($"Carregando perfil de software de: {caminhoCompletoPerfil} para configurações finais.");
             if (!File.Exists(caminhoCompletoPerfil)) return null;

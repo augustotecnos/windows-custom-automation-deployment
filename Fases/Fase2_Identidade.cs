@@ -18,7 +18,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
         private static readonly string CaminhoScriptIdentidade =
-            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Manage-ComputerIdentity.ps1");
+            Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Scripts", "Manage-ComputerIdentity.ps1");
 
         /// <summary>
         /// Inicializa uma nova instância da classe que orquestra a Fase 2.
