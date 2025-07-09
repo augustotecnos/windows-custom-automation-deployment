@@ -55,7 +55,17 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
                     _logCallback($"Modo de reformatação selecionado para a máquina: {nomeParaManter}.");
 
                     _logCallback($"Resetando objeto '{nomeParaManter}' no AD e DHCP para evitar conflitos de confiança...");
-                    ExecutarScriptIdentidade("-Mode ResetADObject", $"-ComputerName \"{nomeParaManter}\"");
+
+                    string resetResult = ExecutarScriptIdentidade(
+                        "-Mode ResetADObject",
+                        $"-ComputerName \"{nomeParaManter}\"",
+                        true);
+
+                    if (!string.Equals(resetResult, "Success", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new Exception("Falha ao resetar o objeto do computador no ambiente.");
+                    }
+
                     _logCallback($"Objeto '{nomeParaManter}' resetado com sucesso.");
                     
                     // O nome final é o mesmo que foi selecionado para manter.
