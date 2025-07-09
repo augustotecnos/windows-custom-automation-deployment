@@ -1,15 +1,10 @@
-using INSTALADOR_SOFTWARE_SE.Fases;
-using INSTALADOR_SOFTWARE_SE.Helpers;
-using INSTALADOR_SOFTWARE_SE.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.Json;
+// ADICIONE ESTAS DIRETIVAS PARA QUE O FORMULÁRIO ENCONTRE AS OUTRAS CLASSES
+using INSTALADOR_SOFTWARE_SE.Models;
+using INSTALADOR_SOFTWARE_SE.Helpers;
+using INSTALADOR_SOFTWARE_SE.Fases;
 
 namespace INSTALADOR_SOFTWARE_SE
 {
@@ -221,7 +216,7 @@ namespace INSTALADOR_SOFTWARE_SE
             }
         }
 
-        private void Tarefa_DoWork(object sender, DoWorkEventArgs e)
+        private void Tarefa_DoWork(object? sender, DoWorkEventArgs e)
         {
             var estado = e.Argument as Dictionary<string, string>;
             bool sucessoDaFase = false;
@@ -266,7 +261,7 @@ namespace INSTALADOR_SOFTWARE_SE
             e.Result = sucessoDaFase;
         }
 
-        private void Tarefa_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Tarefa_ProgressChanged(object? sender, ProgressChangedEventArgs e)
         {
             string mensagem = e.UserState as string;
             if (mensagem != null)
@@ -275,7 +270,7 @@ namespace INSTALADOR_SOFTWARE_SE
             }
         }
 
-        private void Tarefa_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Tarefa_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {

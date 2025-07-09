@@ -1,102 +1,73 @@
-using System.Collections.Generic;
-
+/*
+ * =====================================================================================
+ * ARQUIVO: Models/Models.cs
+ * DESCRIÇÃO: Corrigido para incluir o namespace correto e resolver os avisos de
+ * nulidade (CS8618). Propriedades que são carregadas de JSON agora
+ * são anuláveis ('?') e listas são inicializadas para evitar erros.
+ * =====================================================================================
+ */
 namespace INSTALADOR_SOFTWARE_SE.Models
 {
-    // -----------------------------------------------------------------------------------
-    // MODELOS PARA O ARQUIVO DE REDE LOCAL (network_config.json)
-    // -----------------------------------------------------------------------------------
+    // Adicionamos '?' para indicar que as propriedades podem ser nulas,
+    // pois elas são preenchidas a partir de arquivos JSON, e não no construtor.
+    // Também inicializamos listas para evitar que sejam nulas.
 
-    /// <summary>
-    /// Representa a configuração de rede para a atribuição inicial de IP estático.
-    /// Lida a partir do arquivo 'network_config.json' local.
-    /// </summary>
     public class NetworkConfig
     {
-        public string SubnetMask { get; set; }
-        public string Gateway { get; set; }
-        public string Dns { get; set; }
-        public List<string> IpTestRange { get; set; }
+        public string? SubnetMask { get; set; }
+        public string? Gateway { get; set; }
+        public string? Dns { get; set; }
+        public List<string> IpTestRange { get; set; } = new List<string>();
     }
 
-    // -----------------------------------------------------------------------------------
-    // MODELOS PARA O ARQUIVO DE CONFIGURAÇÃO MESTRE (master_config.json)
-    // -----------------------------------------------------------------------------------
-
-    /// <summary>
-    /// Representa uma Unidade/Filial da empresa.
-    /// </summary>
     public class Unidade
     {
-        public string NomeExibicao { get; set; }
-        public string Id { get; set; }
+        public string? NomeExibicao { get; set; }
+        public string? Id { get; set; }
     }
 
-    /// <summary>
-    /// Representa um Setor/Departamento da empresa.
-    /// </summary>
     public class Setor
     {
-        public string NomeExibicao { get; set; }
-        public string Id { get; set; }
+        public string? NomeExibicao { get; set; }
+        public string? Id { get; set; }
     }
 
-    /// <summary>
-    /// Representa um usuário final que receberá a máquina.
-    /// </summary>
     public class UsuarioFinal
     {
-        public string NomeExibicao { get; set; }
-        public string LoginName { get; set; }
+        public string? NomeExibicao { get; set; }
+        public string? LoginName { get; set; }
     }
 
-    /// <summary>
-    /// Representa o objeto raiz do arquivo 'master_config.json', contendo as listas
-    /// que irão popular os ComboBoxes na interface do técnico.
-    /// </summary>
     public class MasterConfig
     {
-        public List<Unidade> Unidades { get; set; }
-        public List<Setor> Setores { get; set; }
-        public List<UsuarioFinal> UsuariosFinais { get; set; }
+        public List<Unidade> Unidades { get; set; } = new List<Unidade>();
+        public List<Setor> Setores { get; set; } = new List<Setor>();
+        public List<UsuarioFinal> UsuariosFinais { get; set; } = new List<UsuarioFinal>();
     }
 
-
-    // -----------------------------------------------------------------------------------
-    // MODELOS PARA OS ARQUIVOS DE PERFIL DE SOFTWARE (ex: matriz_ti.json)
-    // -----------------------------------------------------------------------------------
-
-    /// <summary>
-    /// Representa um instalador que não é do Winget (legado), como .msi, .exe ou .bat.
-    /// </summary>
     public class LegacyInstaller
     {
-        public string Nome { get; set; }
-        public string Path { get; set; }
-        public string Tipo { get; set; }
-        public string Argumentos { get; set; }
+        public string? Nome { get; set; }
+        public string? Path { get; set; }
+        public string? Tipo { get; set; } // 'msi' ou 'exe'
+        public string? Argumentos { get; set; }
     }
-
-    /// <summary>
-    /// Representa a configuração da VPN para um determinado perfil.
-    /// </summary>
+    
     public class VpnConfig
     {
-        public string InstallerPath { get; set; }
-        public string ConfigFilePath { get; set; }
+        public string? InstallerPath { get; set; }
+        public string? ConfigFilePath { get; set; }
     }
 
-    /// <summary>
-    /// Representa o objeto raiz de um arquivo de perfil de software,
-    /// detalhando tudo que precisa ser instalado e configurado para um setor específico.
-    /// </summary>
-    public class SoftwareProfile
+    // O nome da classe é 'PerfilSoftware' como no repositório.
+    public class PerfilSoftware
     {
-        public string NomePerfil { get; set; }
-        public List<string> WingetPackages { get; set; }
-        public List<LegacyInstaller> LegacyInstallers { get; set; }
-        public List<string> Printers { get; set; }
-        public string HostsFile { get; set; }
-        public VpnConfig VpnConfig { get; set; }
-        public List<string> LocalGroups { get; set; }
+        public string? NomePerfil { get; set; }
+        public List<string> WingetPackages { get; set; } = new List<string>();
+        public List<LegacyInstaller> LegacyInstallers { get; set; } = new List<LegacyInstaller>();
+        public List<string> Printers { get; set; } = new List<string>();
+        public Dictionary<string, string>? HostsFile { get; set; }
+        public VpnConfig? VpnConfig { get; set; }
+        public List<string> LocalGroups { get; set; } = new List<string>();
     }
 }
