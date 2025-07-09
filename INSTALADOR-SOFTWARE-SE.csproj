@@ -5,8 +5,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>INSTALADOR_SOFTWARE_SE</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <!-- Avoid including *.cs files twice -->
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Disable default item inclusion to avoid duplicate Compile entries -->
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
 
   <!-- Explicitly include source files when default items are disabled -->
