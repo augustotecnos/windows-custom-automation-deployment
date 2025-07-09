@@ -7,18 +7,4 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Form_Tela_Principal.cs" />
-    <Compile Include="Form_Tela_Principal.Designer.cs" />
-    <Compile Include="Models/Models.cs" />
-    <Compile Include="Helpers/GerenciadorDeEstado.cs" />
-    <Compile Include="Helpers/GerenciadorDeRede.cs" />
-    <Compile Include="Fases/Fase2_Identidade.cs" />
-    <Compile Include="Fases/Fase3_Dominio.cs" />
-    <Compile Include="Fases/Fase4_Update.cs" />
-    <Compile Include="Fases/Fase5_SoftwareE_Drivers.cs" />
-    <Compile Include="Fases/Fase6_ConfigsFinais.cs" />
-    <Compile Include="Fases/Fase7_Limpeza.cs" />
-  </ItemGroup>
 </Project>
