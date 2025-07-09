@@ -16,7 +16,7 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
     /// </summary>
     public class GerenciadorDeRede
     {
-        private readonly NetworkConfig _networkConfig;
+        private readonly NetworkConfig? _networkConfig;
 
         /// <summary>
         /// Inicializa uma nova instância do GerenciadorDeRede, carregando
@@ -31,7 +31,7 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
         /// Lê e desserializa o arquivo 'network_config.json' da pasta da aplicação.
         /// </summary>
         /// <returns>Um objeto NetworkConfig preenchido ou null se o arquivo não for encontrado ou for inválido.</returns>
-        private NetworkConfig CarregarConfiguracaoDeRedeLocal()
+        private NetworkConfig? CarregarConfiguracaoDeRedeLocal()
         {
             try
             {
@@ -43,7 +43,12 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
                     throw new FileNotFoundException("O arquivo 'network_config.json' é essencial e não foi encontrado na pasta da aplicação.", configPath);
                 }
                 string jsonContent = File.ReadAllText(configPath);
-                return JsonSerializer.Deserialize<NetworkConfig>(jsonContent);
+                var config = JsonSerializer.Deserialize<NetworkConfig>(jsonContent);
+                if (config == null)
+                {
+                    throw new InvalidOperationException("Falha ao desserializar o arquivo 'network_config.json'. O conteúdo está inválido.");
+                }
+                return config!;
             }
             catch (System.Exception ex)
             {
@@ -57,7 +62,7 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
         /// Procura pela primeira interface de rede (Ethernet ou Wi-Fi) que esteja fisicamente conectada e operacional.
         /// </summary>
         /// <returns>O objeto NetworkInterface ou null se nenhuma for encontrada.</returns>
-        private NetworkInterface GetActiveInterface()
+        private NetworkInterface? GetActiveInterface()
         {
             return NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
                 a => a.OperationalStatus == OperationalStatus.Up &&
@@ -83,6 +88,10 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
             processInfo.Arguments = $"interface ip set address name=\"{interfaceName}\" static {ip} {subnetMask} {gateway}";
             using (var processIp = Process.Start(processInfo))
             {
+                if (processIp == null)
+                {
+                    return false; // Falha ao iniciar o processo
+                }
                 processIp.WaitForExit();
                 if (processIp.ExitCode != 0) return false; // Falhou em definir o IP
             }
@@ -91,6 +100,10 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
             processInfo.Arguments = $"interface ip set dns name=\"{interfaceName}\" static {dns}";
             using (var processDns = Process.Start(processInfo))
             {
+                if (processDns == null)
+                {
+                    return false; // Falha ao iniciar o processo de DNS
+                }
                 processDns.WaitForExit();
                 return processDns.ExitCode == 0; // Retorna true apenas se o DNS também for definido com sucesso
             }
@@ -104,7 +117,7 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
         /// <returns>True se um IP foi atribuído com sucesso, False caso contrário.</returns>
         public bool AtribuirIpDisponivel(out string ipAtribuido)
         {
-            ipAtribuido = null;
+            ipAtribuido = string.Empty;
             if (_networkConfig == null) return false; // Falha se a configuração não foi carregada
 
             var activeInterface = GetActiveInterface();
@@ -124,9 +137,13 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
                         continue; // Se o IP responde, pula para o próximo da lista.
                     }
                 }
-                
-                // Se o Ping falhou (o que é bom, significa que o IP está livre), tenta configurar.
-                if (SetStaticIpAddress(activeInterface.Name, ip, _networkConfig.SubnetMask, _networkConfig.Gateway, _networkConfig.Dns))
+
+                // Verifica se os parâmetros necessários não são nulos antes de configurar.
+                if (activeInterface != null &&
+                    !string.IsNullOrEmpty(_networkConfig.SubnetMask) &&
+                    !string.IsNullOrEmpty(_networkConfig.Gateway) &&
+                    !string.IsNullOrEmpty(_networkConfig.Dns) &&
+                    SetStaticIpAddress(activeInterface.Name, ip, _networkConfig.SubnetMask, _networkConfig.Gateway, _networkConfig.Dns))
                 {
                     ipAtribuido = ip; // Guarda o IP que foi usado.
                     return true; // Sucesso! Termina o método.
@@ -136,4 +153,5 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
             // Se o loop terminar, significa que todos os IPs do range foram testados e estão em uso.
             return false;
         }
-    }}
+    }
+}

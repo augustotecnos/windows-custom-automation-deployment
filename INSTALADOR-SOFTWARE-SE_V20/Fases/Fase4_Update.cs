@@ -119,6 +119,10 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
 
             using (var process = Process.Start(startInfo))
             {
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Falha ao iniciar o processo do PowerShell.");
+                }
                 // Loga a saída do script em tempo real para um melhor diagnóstico
                 process.OutputDataReceived += (sender, args) => { if (args.Data != null) _logCallback($"  [PS-LOG]: {args.Data}"); };
                 process.ErrorDataReceived += (sender, args) => { if (args.Data != null) _logCallback($"  [PS-ERR]: {args.Data}"); };

@@ -206,7 +206,7 @@ using System.Windows.Forms;
                 ["UsuarioFinal"]             = cmbUsuarioFinal.SelectedValue.ToString()!,
                 ["ExecutarUpdates"]          = chkExecutarUpdates.Checked.ToString(),
                 ["ModoNomenclatura"]         = rbNomeNovo.Checked ? "Novo" : "ManterExistente",
-                ["NomeComputadorSelecionado"]= rbNomeExistente.Checked ? cmbNomesExistentes.SelectedValue.ToString()! : string.Empty,
+                ["NomeComputadorSelecionado"]= rbNomeExistente.Checked && cmbNomesExistentes.SelectedValue != null ? cmbNomesExistentes.SelectedValue.ToString()! : string.Empty,
                 ["EtapaAtual"]               = "Iniciar_Nomenclatura"
             };
 
@@ -225,7 +225,7 @@ using System.Windows.Forms;
             if (!_tarefa.IsBusy) _tarefa.RunWorkerAsync(estado);
         }
 
-        private void Tarefa_DoWork(object sender, DoWorkEventArgs e)
+        private void Tarefa_DoWork(object? sender, DoWorkEventArgs e)
         {
             var estado = (Dictionary<string,string>)e.Argument!;
             bool sucesso = false;
@@ -267,12 +267,12 @@ using System.Windows.Forms;
             e.Result = sucesso;
         }
 
-        private void Tarefa_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Tarefa_ProgressChanged(object? sender, ProgressChangedEventArgs e)
         {
             if (e.UserState is string msg) AtualizarStatusProgresso(msg);
         }
 
-        private void Tarefa_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Tarefa_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {

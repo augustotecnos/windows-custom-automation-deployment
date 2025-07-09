@@ -126,6 +126,10 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
 
             using (var process = Process.Start(startInfo))
             {
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Falha ao iniciar o processo PowerShell para ingresso no domínio.");
+                }
                 // Pausa a execução do C# e aguarda o processo PowerShell (e a interação do técnico) terminar.
                 process.WaitForExit();
                 // Retorna o código de saída para análise.

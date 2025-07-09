@@ -95,6 +95,10 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
 
             using (var process = Process.Start(startInfo))
             {
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Falha ao iniciar o processo do PowerShell para o script de finalização.");
+                }
                 process.WaitForExit();
                 return process.ExitCode;
             }
