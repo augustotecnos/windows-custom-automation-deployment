@@ -306,11 +306,12 @@ namespace INSTALADOR_SOFTWARE_SE
                 pnlAlerta.Visible = true;
                 lblTituloAlerta.Text = titulo;
                 lblMensagemAlerta.Text = mensagem;
+                Logger.Log($"ALERTA: {titulo} - {mensagem}");
                 System.Media.SystemSounds.Exclamation.Play();
                 timerAlerta.Start();
             }
         }
-        
+
         private void AtualizarStatusProgresso(string status)
         {
              if (this.InvokeRequired)
@@ -321,6 +322,7 @@ namespace INSTALADOR_SOFTWARE_SE
             {
                 lblStatusProgresso.Text = status;
                 txtLogCompleto.AppendText($"[{DateTime.Now:HH:mm:ss}] {status}{Environment.NewLine}");
+                Logger.Log(status);
             }
         }
 
@@ -331,5 +333,4 @@ namespace INSTALADOR_SOFTWARE_SE
             Application.DoEvents();
             Task.Run(() => IniciarNovoProcesso());
         }
-    }
-}
+    }}
