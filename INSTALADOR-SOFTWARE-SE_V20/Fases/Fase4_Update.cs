@@ -17,7 +17,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
         private static readonly string CaminhoScriptUpdate =
-            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Invoke-WindowsUpdate.ps1");
+            Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Scripts", "Invoke-WindowsUpdate.ps1");
 
         public Fase4_Update(GerenciadorDeEstado gerenciadorDeEstado, Dictionary<string, string> estadoAtual, Action<string> logCallback)
         {

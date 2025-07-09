@@ -17,7 +17,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
         private readonly Dictionary<string, string> _estadoAtual;
         private readonly Action<string> _logCallback;
         private static readonly string CaminhoScriptDominio =
-            Path.Combine(AppConfig.DeploymentSharePath, "Scripts", "Invoke-SecureDomainJoin.ps1");
+            Path.Combine(INSTALADOR_SOFTWARE_SE.AppConfig.DeploymentSharePath, "Scripts", "Invoke-SecureDomainJoin.ps1");
 
         public Fase3_Dominio(GerenciadorDeEstado gerenciadorDeEstado, Dictionary<string, string> estadoAtual, Action<string> logCallback)
         {

@@ -1,4 +1,5 @@
 using INSTALADOR_SOFTWARE_SE.Models;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -44,10 +45,10 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
                 string jsonContent = File.ReadAllText(configPath);
                 return JsonSerializer.Deserialize<NetworkConfig>(jsonContent);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // Em caso de qualquer erro (arquivo não encontrado, JSON mal formatado), logamos e retornamos null.
-                Console.WriteLine($"ERRO CRÍTICO ao carregar network_config.json: {ex.Message}");
+                System.Console.WriteLine($"ERRO CRÍTICO ao carregar network_config.json: {ex.Message}");
                 return null;
             }
         }
@@ -119,7 +120,7 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
                     var reply = ping.Send(ip, 1500);
                     if (reply.Status == IPStatus.Success)
                     {
-                        Console.WriteLine($"IP em uso: {ip}");
+                        System.Console.WriteLine($"IP em uso: {ip}");
                         continue; // Se o IP responde, pula para o próximo da lista.
                     }
                 }
@@ -135,5 +136,4 @@ namespace INSTALADOR_SOFTWARE_SE.Helpers
             // Se o loop terminar, significa que todos os IPs do range foram testados e estão em uso.
             return false;
         }
-    }
-}
+    }}
