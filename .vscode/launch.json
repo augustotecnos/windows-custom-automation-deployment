@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (WinForms)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            
+            // ===== CAMINHO CORRIGIDO AQUI =====
+            "program": "${workspaceFolder}/INSTALADOR-SOFTWARE-SE_V20/bin/Debug/net8.0-windows/INSTALADOR-SOFTWARE-SE.dll",
+            
+            "args": [],
+
+            // Também ajustamos o diretório de trabalho (cwd) para a pasta do projeto
+            "cwd": "${workspaceFolder}/INSTALADOR-SOFTWARE-SE_V20",
+
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}
