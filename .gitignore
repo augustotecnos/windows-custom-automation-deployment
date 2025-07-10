@@ -25,4 +25,4 @@ _ReSharper*/
 # Other
 *.sqlite
 
-
+secure_credential.xml

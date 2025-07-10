@@ -4,13 +4,32 @@ param(
     [ValidateSet('GetNewName', 'GetExistingNames', 'ResetADObject')]
     [string]$Mode,
 
+    # Parâmetro para o caminho do arquivo de credencial criptografado
+    [Parameter(Mandatory=$true)]
+    [string]$CredentialFilePath,
+
+    # Parâmetros originais
     [string]$PerfilId,
-
     [string]$ComputerName,
-
     [string]$ServidorDhcp = "seu-servidor-dhcp.dominio.local"
 )
 
+# --- Carregar Credencial ---
+# Esta parte é executada assim que o script é iniciado.
+try {
+    if (-not (Test-Path -Path $CredentialFilePath -PathType Leaf)) {
+        throw "Arquivo de credencial não encontrado em: $CredentialFilePath"
+    }
+    # Carrega a credencial criptografada
+    $credential = Import-CliXml -Path $CredentialFilePath
+} catch {
+    Write-Error "Falha ao carregar o arquivo de credencial. Erro: $_"
+    # Para a execução do script se a credencial não puder ser carregada
+    exit 1
+}
+
+
+# --- Lógica Principal do Script ---
 try {
     switch ($Mode) {
         'GetExistingNames' {
@@ -23,8 +42,13 @@ try {
                 "filial_se"   { $prefixo = "se-se"; break }
                 default       { throw "PerfilId '$PerfilId' inválido para listar nomes." }
             }
-            $computadores = Get-ADComputer -Filter "Name -like '$($prefixo)*'" | Select-Object -ExpandProperty Name | Sort-Object
-            if ($computadores) { return ($computadores -join [Environment]::NewLine) }
+            
+            # USA A CREDENCIAL CARREGADA
+            $computadores = Get-ADComputer -Filter "Name -like '$($prefixo)*'" -Credential $credential | Select-Object -ExpandProperty Name | Sort-Object
+            if ($computadores) {
+                # Retorna os nomes para a aplicação C#
+                return ($computadores -join [Environment]::NewLine)
+            }
             return ""
         }
         'GetNewName' {
@@ -39,12 +63,23 @@ try {
             }
             $numerosPossiveis = 8..190
             $numerosUsados = [System.Collections.Generic.List[int]]::new()
-            Get-ADComputer -Filter "Name -like '$($prefixo)*'" -ErrorAction SilentlyContinue | ForEach-Object {
+            
+            # USA A CREDENCIAL CARREGADA
+            Get-ADComputer -Filter "Name -like '$($prefixo)*'" -Credential $credential -ErrorAction SilentlyContinue | ForEach-Object {
                 if ($_.Name -match '\d+') { $numerosUsados.Add([int]$matches[0]) }
             }
-            Get-DhcpServerv4Reservation -ComputerName $ServidorDhcp -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "$($prefixo)*" } | ForEach-Object {
+
+            # EXECUTA O COMANDO DE DHCP REMOTAMENTE USANDO A CREDENCIAL
+            $sbDhcp = {
+                param($prefixoLike)
+                Get-DhcpServerv4Reservation | Where-Object { $_.Name -like $prefixoLike }
+            }
+            $reservasDhcp = Invoke-Command -ComputerName $ServidorDhcp -Credential $credential -ScriptBlock $sbDhcp -ArgumentList "$($prefixo)*"
+
+            $reservasDhcp | ForEach-Object {
                 if ($_.Name -match '\d+') { $numerosUsados.Add([int]$matches[0]) }
             }
+
             $numerosUsadosUnicos = $numerosUsados | Sort-Object -Unique
             $numerosLivres = Compare-Object $numerosPossiveis $numerosUsadosUnicos | Where-Object { $_.SideIndicator -eq '<=' }
             $proximoNumero = $numerosLivres | Select-Object -ExpandProperty InputObject -First 1
@@ -55,16 +90,20 @@ try {
         'ResetADObject' {
             Write-Host "MODO: ResetADObject | Computador: $ComputerName"
             if ([string]::IsNullOrWhiteSpace($ComputerName)) { throw "-ComputerName é obrigatório para o modo ResetADObject." }
-            try {
-                if (Get-DhcpServerv4Reservation -ComputerName $ServidorDhcp -Name $ComputerName -ErrorAction SilentlyContinue) {
-                    Remove-DhcpServerv4Reservation -ComputerName $ServidorDhcp -Name $ComputerName -Force
-                    Write-Host "Reserva DHCP para '$ComputerName' removida com sucesso."
+            
+            # EXECUTA O COMANDO DE DHCP REMOTAMENTE USANDO A CREDENCIAL
+            $sbRemoveDhcp = {
+                param($NomeComputador)
+                if (Get-DhcpServerv4Reservation -Name $NomeComputador -ErrorAction SilentlyContinue) {
+                    Remove-DhcpServerv4Reservation -Name $NomeComputador -Force
+                    Write-Host "Reserva DHCP para '$NomeComputador' removida com sucesso (executado remotamente)."
                 }
-            } catch {
-                Write-Warning "AVISO: Não foi possível remover a reserva DHCP para '$ComputerName'. Erro: $($_.Exception.Message)"
             }
-            if (Get-ADComputer -Identity $ComputerName -ErrorAction SilentlyContinue) {
-                Remove-ADComputer -Identity $ComputerName -Confirm:$false
+            Invoke-Command -ComputerName $ServidorDhcp -Credential $credential -ScriptBlock $sbRemoveDhcp -ArgumentList $ComputerName
+
+            # USA A CREDENCIAL CARREGADA
+            if (Get-ADComputer -Identity $ComputerName -Credential $credential -ErrorAction SilentlyContinue) {
+                Remove-ADComputer -Identity $ComputerName -Credential $credential -Confirm:$false
                 Write-Host "Objeto do computador '$ComputerName' removido do Active Directory com sucesso."
             } else {
                 Write-Warning "AVISO: O objeto do computador '$ComputerName' não foi encontrado no AD."

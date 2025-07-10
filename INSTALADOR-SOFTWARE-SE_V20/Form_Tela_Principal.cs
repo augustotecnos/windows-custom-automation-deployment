@@ -22,8 +22,8 @@ using System.Windows.Forms;
         // ------------------------------------------------------------------
         // Constantes
         // ------------------------------------------------------------------
-        private const string CaminhoDeploymentShare     = @"\\seu-servidor\DeploymentShare$";
-        private const string CaminhoScriptIdentidade    = @"\\seu-servidor\DeploymentShare$\Scripts\Manage-ComputerIdentity.ps1";
+        //private const string CaminhoDeploymentShare     = @"\\seu-servidor\DeploymentShare$";
+        //private const string CaminhoScriptIdentidade    = @"\\seu-servidor\DeploymentShare$\Scripts\Manage-ComputerIdentity.ps1";
 
         // ------------------------------------------------------------------
         // Campos
@@ -75,19 +75,19 @@ using System.Windows.Forms;
         // ------------------------------------------------------------------
         private void IniciarNovoProcesso()
         {
-            AtualizarStatusProgresso("Configurando interface de rede...");
-            if (!_gerenciadorDeRede.AtribuirIpDisponivel(out var ip))
-            {
-                AtivarModoDeAlerta("FALHA DE REDE", "Não foi possível atribuir um IP válido. Verifique o cabo e o arquivo 'network_config.json'.");
-                return;
-            }
-
-            AtualizarStatusProgresso($"IP {ip} atribuído. Verificando acesso ao servidor...");
-            if (!Directory.Exists(CaminhoDeploymentShare))
-            {
-                AtivarModoDeAlerta("FALHA DE CONEXÃO", $"Não foi possível acessar '{CaminhoDeploymentShare}'.");
-                return;
-            }
+//            AtualizarStatusProgresso("Configurando interface de rede...");
+//            if (!_gerenciadorDeRede.AtribuirIpDisponivel(out var ip))
+//            {
+//                AtivarModoDeAlerta("FALHA DE REDE", "Não foi possível atribuir um IP válido. Verifique o cabo e o arquivo 'network_config.json'.");
+//                return;
+//            }
+//
+//            AtualizarStatusProgresso($"IP {ip} atribuído. Verificando acesso ao servidor...");
+//            if (!Directory.Exists(AppConfig.DeploymentSharePath))
+//            {
+//                AtivarModoDeAlerta("FALHA DE CONEXÃO", $"Não foi possível acessar '{AppConfig.DeploymentSharePath}'.");
+//                return;
+//            }
 
             AtualizarStatusProgresso("Conectado ao servidor. Carregando opções...");
             var masterConfig = CarregarConfiguracoesDaRede();
@@ -109,7 +109,7 @@ using System.Windows.Forms;
         {
             try
             {
-                var file = Path.Combine(CaminhoDeploymentShare, "Config", "master_config.json");
+                var file = Path.Combine(AppConfig.DeploymentSharePath, "Config", "master_config.json");
                 return JsonSerializer.Deserialize<MasterConfig>(File.ReadAllText(file));
             }
             catch (Exception ex)
@@ -166,9 +166,13 @@ using System.Windows.Forms;
             try
             {
                 var perfilId = cmbUnidade.SelectedValue.ToString();
+
+                // 1. Defina o caminho para o arquivo de credencial
+                string credentialFilePath = Path.Combine(AppConfig.DeploymentSharePath, "Config", "secure_credential.xml");
+
                 var psi = new ProcessStartInfo("powershell")
                 {
-                    Arguments = $"-ExecutionPolicy Bypass -File \"{CaminhoScriptIdentidade}\" -Mode GetExistingNames -PerfilId \"{perfilId}\"",
+                    Arguments = $"-ExecutionPolicy Bypass -File \"{AppConfig.CaminhoScriptIdentidade}\" -Mode GetExistingNames -PerfilId \"{perfilId}\" -CredentialFilePath \"{credentialFilePath}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true
