@@ -143,11 +143,35 @@ using System.Windows.Forms;
         // ------------------------------------------------------------------
         private void rbNomenclatura_CheckedChanged(object sender, EventArgs e)
         {
-            bool manter = rbNomeExistente.Checked;
-            lblNomeExistente.Enabled        = manter;
-            cmbNomesExistentes.Enabled      = manter;
-            if (manter) CarregarNomesDeMaquinasExistentes();
-            else        cmbNomesExistentes.DataSource = null;
+           // Converte o sender para RadioButton para saber qual foi ativado
+            var rb = sender as RadioButton;
+            if (rb == null || !rb.Checked) return;
+
+            // Habilita/Desabilita a opção de manter nome existente
+            bool manterExistente = (rb == rbNomeExistente);
+            lblNomeExistente.Enabled = manterExistente;
+            cmbNomesExistentes.Enabled = manterExistente;
+            if (manterExistente)
+            {
+                CarregarNomesDeMaquinasExistentes();
+            }
+            else
+            {
+                cmbNomesExistentes.DataSource = null;
+            }
+
+            // Habilita/Desabilita a opção de digitar nome manual
+            bool manual = (rb == rbNomeManual);
+            lblNomeManual.Enabled = manual;
+            txtNomeManual.Enabled = manual;
+            if (manual)
+            {
+                txtNomeManual.Focus();
+            }
+            else
+            {
+                txtNomeManual.Text = string.Empty;
+            }
         }
 
         private void CarregarNomesDeMaquinasExistentes()
@@ -194,29 +218,50 @@ using System.Windows.Forms;
 
         private void btnIniciarConfiguracao_Click(object sender, EventArgs e)
         {
+            
+                    // --- VALIDAÇÃO ---
             if (cmbUnidade.SelectedValue == null ||
-                cmbSetor.SelectedValue == null   ||
-                cmbUsuarioFinal.SelectedValue == null ||
-                (rbNomeExistente.Checked && cmbNomesExistentes.SelectedValue == null))
+                cmbSetor.SelectedValue == null ||
+                cmbUsuarioFinal.SelectedValue == null)
             {
-                MessageBox.Show("Preencha todas as opções antes de continuar.", "Campos obrigatórios", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Preencha todas as opções de Perfil, Setor e Usuário.", "Campos obrigatórios", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
+        
+            if (rbNomeExistente.Checked && cmbNomesExistentes.SelectedValue == null)
+            {
+                MessageBox.Show("Se você escolheu reformatar, precisa selecionar uma máquina da lista.", "Campos obrigatórios", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+        
+            // **NOVA VALIDAÇÃO**
+            if (rbNomeManual.Checked && string.IsNullOrWhiteSpace(txtNomeManual.Text))
+            {
+                MessageBox.Show("Se você escolheu digitar o nome, o campo não pode estar vazio.", "Campos obrigatórios", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+        
+            // --- COLETA DE DADOS ---
+            string modoNomenclatura = "Novo"; // Padrão
+            if (rbNomeExistente.Checked) modoNomenclatura = "ManterExistente";
+            if (rbNomeManual.Checked) modoNomenclatura = "Manual"; // **NOVO MODO**
+        
             var estadoInicial = new Dictionary<string, string>
             {
-                ["PerfilId"]                 = cmbUnidade.SelectedValue.ToString()!,
-                ["SetorId"]                  = cmbSetor.SelectedValue.ToString()!,
-                ["UsuarioFinal"]             = cmbUsuarioFinal.SelectedValue.ToString()!,
-                ["ExecutarUpdates"]          = chkExecutarUpdates.Checked.ToString(),
-                ["ModoNomenclatura"]         = rbNomeNovo.Checked ? "Novo" : "ManterExistente",
-                ["NomeComputadorSelecionado"]= rbNomeExistente.Checked && cmbNomesExistentes.SelectedValue != null ? cmbNomesExistentes.SelectedValue.ToString()! : string.Empty,
-                ["EtapaAtual"]               = "Iniciar_Nomenclatura"
+                ["PerfilId"]                  = cmbUnidade.SelectedValue.ToString()!,
+                ["SetorId"]                   = cmbSetor.SelectedValue.ToString()!,
+                ["UsuarioFinal"]              = cmbUsuarioFinal.SelectedValue.ToString()!,
+                ["ExecutarUpdates"]           = chkExecutarUpdates.Checked.ToString(),
+                ["ModoNomenclatura"]          = modoNomenclatura, // Atualizado
+                ["NomeComputadorSelecionado"] = rbNomeExistente.Checked && cmbNomesExistentes.SelectedValue != null ? cmbNomesExistentes.SelectedValue.ToString()! : string.Empty,
+                ["NomeComputadorManual"]      = txtNomeManual.Text, // **NOVO ESTADO**
+                ["EtapaAtual"]                = "Iniciar_Nomenclatura"
             };
-
+        
             _gerenciadorDeEstado.SalvarEstadoCompleto(estadoInicial);
             pnlConfiguracao.Visible = false;
             ContinuarProcesso(estadoInicial);
+
         }
 
         // ------------------------------------------------------------------
