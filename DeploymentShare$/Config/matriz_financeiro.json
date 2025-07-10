@@ -1,22 +1,22 @@
 {
-  "nomePerfil": "Matriz - Financeiro",
-  "wingetPackages": [
+  "NomePerfil": "Matriz - Financeiro",
+  "WingetPackages": [
     "Adobe.Acrobat.Reader.64-bit",
     "Google.Chrome"
   ],
-  "legacyInstallers": [
+  "LegacyInstallers": [
     {
-      "nome": "Sistema Financeiro Legacy",
-      "path": "\\seu-servidor\\DeploymentShare$\\Applications\\FinanceSystem_v1.0.msi",
-      "tipo": "msi",
-      "argumentos": "/qn /norestart"
+      "Nome": "Sistema Financeiro Legacy",
+      "Path": "\\seu-servidor\\DeploymentShare$\\Applications\\FinanceSystem_v1.0.msi",
+      "Tipo": "msi",
+      "Argumentos": "/qn /norestart"
     }
   ],
-  "printers": [
+  "Printers": [
     "\\servidor-impressao\\IMP_FIN_CONTABIL",
     "\\servidor-impressao\\IMP_FIN_ETIQUETAS"
   ],
-  "localGroups": [
+  "LocalGroups": [
     "Remote Desktop Users"
   ]
 }

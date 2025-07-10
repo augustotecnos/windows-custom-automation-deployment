@@ -18,6 +18,7 @@ namespace INSTALADOR_SOFTWARE_SE.Models
     {
         public string? NomeExibicao { get; set; }
         public string? Id { get; set; }
+        public string? namingPrefix { get; set; }
     }
 
     public class Setor

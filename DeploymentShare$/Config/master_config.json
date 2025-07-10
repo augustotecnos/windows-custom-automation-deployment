@@ -1,67 +1,67 @@
 {
-  "unidades": [
+  "Unidades": [
     {
-      "nomeExibicao": "Matriz (Ingressar no Domínio)",
-      "id": "matriz",
+      "NomeExibicao": "Matriz (Ingressar no Domínio)",
+      "Id": "matriz",
       "namingPrefix": "sepro"
     },
     {
-      "nomeExibicao": "Filial - Sergipe",
-      "id": "filial_se",
+      "NomeExibicao": "Filial - Sergipe",
+      "Id": "filial_se",
       "namingPrefix": "se-se"
     },
     {
-      "nomeExibicao": "Filial - Bahia (Expansão)",
-      "id": "filial_ba",
+      "NomeExibicao": "Filial - Bahia (Expansão)",
+      "Id": "filial_ba",
       "namingPrefix": "se-ba"
     },
     {
-      "nomeExibicao": "Standalone (Sem Domínio)",
-      "id": "standalone",
+      "NomeExibicao": "Standalone (Sem Domínio)",
+      "Id": "standalone",
       "namingPrefix": "st-pc"
     }
   ],
-  "setores": [
+  "Setores": [
     {
-      "nomeExibicao": "TI - Tecnologia",
-      "id": "ti"
+      "NomeExibicao": "TI - Tecnologia",
+      "Id": "ti"
     },
     {
-      "nomeExibicao": "Financeiro",
-      "id": "financeiro"
+      "NomeExibicao": "Financeiro",
+      "Id": "financeiro"
     },
     {
-      "nomeExibicao": "Vendas e Comercial",
-      "id": "vendas"
+      "NomeExibicao": "Vendas e Comercial",
+      "Id": "vendas"
     },
     {
-      "nomeExibicao": "Recursos Humanos",
-      "id": "rh"
+      "NomeExibicao": "Recursos Humanos",
+      "Id": "rh"
     },
     {
-      "nomeExibicao": "Operacional Padrão",
-      "id": "operacional"
+      "NomeExibicao": "Operacional Padrão",
+      "Id": "operacional"
     }
   ],
-  "usuariosFinais": [
+  "UsuariosFinais": [
     {
-      "nomeExibicao": "Augusto Santos - TI",
-      "loginName": "augusto.santos"
+      "NomeExibicao": "Augusto Santos - TI",
+      "LoginName": "augusto.santos"
     },
     {
-      "nomeExibicao": "Maria Oliveira - Financeiro",
-      "loginName": "maria.oliveira"
+      "NomeExibicao": "Maria Oliveira - Financeiro",
+      "LoginName": "maria.oliveira"
     },
     {
-      "nomeExibicao": "João Pereira - Vendas",
-      "loginName": "joao.pereira"
+      "NomeExibicao": "João Pereira - Vendas",
+      "LoginName": "joao.pereira"
     },
     {
-      "nomeExibicao": "Ana Costa - RH",
-      "loginName": "ana.costa"
+      "NomeExibicao": "Ana Costa - RH",
+      "LoginName": "ana.costa"
     },
     {
-      "nomeExibicao": "Carlos Souza - Operacional",
-      "loginName": "carlos.souza"
+      "NomeExibicao": "Carlos Souza - Operacional",
+      "LoginName": "carlos.souza"
     }
   ]}
