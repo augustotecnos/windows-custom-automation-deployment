@@ -6,6 +6,11 @@
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges>
+      <!--
+        https://learn.microsoft.com/en-us/windows/win32/sbscs/application-manifests
+        Se quiser rodar com permissões de administrador
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+      -->
         <requestedExecutionLevel level="asInvoker" uiAccess="false" />
       </requestedPrivileges>
     </security>

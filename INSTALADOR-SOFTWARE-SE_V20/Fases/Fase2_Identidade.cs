@@ -52,14 +52,29 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
                 _log($"ERRO: O processo Rename-Computer falhou com o código de saída {p.ExitCode}. A automação não pode continuar.");
                 return false;
             }
+
+            try
+            {
+                _log("Nome da máquina agendado para alteração na próxima reinicialização.");
+
+                _estado["NomeComputadorDefinido"] = nomeFinal;
+                _estado["EtapaAtual"]             = "PósRename_IngressarDominio";
+                _estadoMgr.SalvarEstadoCompleto(_estado);
+                _estadoMgr.ConfigurarRunOnce();
+    
+                _log("Configurações salvas. A máquina será reiniciada em 20 segundos...");
+                    Process.Start("shutdown.exe", "/r /t 20 /c \"Ingresso no domínio concluído. Reiniciando para a Fase 3.\"");
+    
+                return true;
+                
+            }
+            catch (Exception ex)
+            {
+                _log($"ERRO FATAL NA FASE 3: {ex.Message}");
+                // Em caso de erro, o processo para aqui para que o técnico possa investigar.
+                return false;
+            }
             
-            _log("Nome da máquina agendado para alteração na próxima reinicialização.");
-
-            _estado["NomeComputadorDefinido"] = nomeFinal;
-            _estado["EtapaAtual"]             = "PósRename_IngressarDominio";
-            _estadoMgr.SalvarEstadoCompleto(_estado);
-
-            return true;
         }
 
         private string? GerarNomeComputador()
