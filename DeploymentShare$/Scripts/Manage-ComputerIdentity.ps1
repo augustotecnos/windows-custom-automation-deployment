@@ -72,7 +72,7 @@ try {
             # EXECUTA O COMANDO DE DHCP REMOTAMENTE USANDO A CREDENCIAL
             $sbDhcp = {
                 param($prefixoLike)
-                Get-DhcpServerv4Reservation | Where-Object { $_.Name -like $prefixoLike }
+                Get-DhcpServerv4Reservation -ScopeId 10.113.11.0  | Where-Object { $_.Name -like $prefixoLike }
             }
             $reservasDhcp = Invoke-Command -ComputerName $ServidorDhcp -Credential $credential -ScriptBlock $sbDhcp -ArgumentList "$($prefixo)*"
 
@@ -94,8 +94,8 @@ try {
             # EXECUTA O COMANDO DE DHCP REMOTAMENTE USANDO A CREDENCIAL
             $sbRemoveDhcp = {
                 param($NomeComputador)
-                if (Get-DhcpServerv4Reservation -Name $NomeComputador -ErrorAction SilentlyContinue) {
-                    Remove-DhcpServerv4Reservation -Name $NomeComputador -Force
+                if (Get-DhcpServerv4Reservation -Name $NomeComputador -ScopeId 10.113.11.0  -ErrorAction SilentlyContinue) {
+                    Remove-DhcpServerv4Reservation -Name $NomeComputador -ScopeId 10.113.11.0  -Force
                     Write-Host "Reserva DHCP para '$NomeComputador' removida com sucesso (executado remotamente)."
                 }
             }
@@ -107,6 +107,7 @@ try {
                 Write-Host "Objeto do computador '$ComputerName' removido do Active Directory com sucesso."
             } else {
                 Write-Warning "AVISO: O objeto do computador '$ComputerName' não foi encontrado no AD."
+                return ""
             }
             return "Success"
         }

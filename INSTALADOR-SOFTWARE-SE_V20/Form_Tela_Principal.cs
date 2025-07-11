@@ -285,7 +285,8 @@ using System.Windows.Forms;
                 switch (estado["EtapaAtual"])
                 {
                     case "Iniciar_Nomenclatura":
-                        sucesso = new Fase2_Identidade(_gerenciadorDeEstado, estado, log).Executar();
+                        //sucesso = new Fase2_Identidade(_gerenciadorDeEstado, estado, log).Executar();
+                        sucesso = true;
                         break;
 
                     case "PósRename_IngressarDominio":
