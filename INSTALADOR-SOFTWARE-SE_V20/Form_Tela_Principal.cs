@@ -258,7 +258,7 @@ using System.Windows.Forms;
                 ["EtapaAtual"]                = "Iniciar_Nomenclatura"
             };
         
-            _gerenciadorDeEstado.SalvarEstadoCompleto(estadoInicial);
+            //_gerenciadorDeEstado.SalvarEstadoCompleto(estadoInicial);
             pnlConfiguracao.Visible = false;
             ContinuarProcesso(estadoInicial);
 
