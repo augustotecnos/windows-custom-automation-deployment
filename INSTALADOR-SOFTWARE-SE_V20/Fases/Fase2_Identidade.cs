@@ -70,7 +70,7 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
             }
             catch (Exception ex)
             {
-                _log($"ERRO FATAL NA FASE 3: {ex.Message}");
+                _log($"ERRO FATAL NA FASE 2: {ex.Message}");
                 // Em caso de erro, o processo para aqui para que o técnico possa investigar.
                 return false;
             }

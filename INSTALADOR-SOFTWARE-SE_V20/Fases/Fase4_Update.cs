@@ -43,7 +43,10 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
                 // Prepara o estado para a próxima fase.
                 _estadoAtual["EtapaAtual"] = "Iniciar_InstalacaoSoftware";
                 _gerenciadorDeEstado.SalvarEstadoCompleto(_estadoAtual);
-                
+                _gerenciadorDeEstado.ConfigurarRunOnce(); // Configura o "despertador".
+
+                _logCallback("Configurações salvas. A máquina será reiniciada em 20 segundos...");
+                Process.Start("shutdown.exe", "/r /t 20 /c \"Atualizações instaladas. Reiniciando para continuar a verificação.\"");
                 // Retorna sucesso, pois a ação de pular foi a correta.
                 return true;
             }
@@ -64,14 +67,17 @@ namespace INSTALADOR_SOFTWARE_SE.Fases
                 // --- ETAPA 3: ANALISAR O RESULTADO E DECIDIR A PRÓXIMA AÇÃO ---
                 switch (exitCode)
                 {
-                    // CASO 1: SUCESSO, SEM NECESSIDADE DE REBOOT.
-                    // O script rodou e não encontrou mais nada para instalar ou o que instalou não exige reboot.
+                    // CASO 1: SUCESSO, SISTEMA SERÁ REINICIADO PARA IR PARA A PRÓXIMA FAZE 5.
+                    // O script rodou e não encontrou mais nada para instalar.
                     case 0:
                         _logCallback("SUCESSO: O sistema está totalmente atualizado. Concluindo a Fase 4.");
-                        // Define o estado para a próxima fase.
+                        // Prepara o estado para a próxima fase.
                         _estadoAtual["EtapaAtual"] = "Iniciar_InstalacaoSoftware";
                         _gerenciadorDeEstado.SalvarEstadoCompleto(_estadoAtual);
-                        // Não configura RunOnce pois não haverá reboot. O worker continuará para o próximo 'case'.
+                        _gerenciadorDeEstado.ConfigurarRunOnce(); // Configura o "despertador".
+
+                        _logCallback("Configurações salvas. A máquina será reiniciada em 20 segundos...");
+                        Process.Start("shutdown.exe", "/r /t 20 /c \"Atualizações instaladas. Reiniciando para continuar a verificação.\"");
                         return true;
 
                     // CASO 2: SUCESSO, MAS UMA REINICIALIZAÇÃO É NECESSÁRIA.
