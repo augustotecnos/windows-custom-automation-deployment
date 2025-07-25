@@ -1,6 +1,79 @@
 [CmdletBinding()]
 param()
 
+# --- Configuração Essencial ---
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
+
+try {
+    Write-Host "Verificando a presença do módulo PSWindowsUpdate..."
+    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+        Write-Host "Módulo não encontrado. Instalando..."
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction Stop
+        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false -ErrorAction Stop
+    }
+    Import-Module PSWindowsUpdate -ErrorAction Stop
+    Write-Host "Módulo PSWindowsUpdate carregado."
+
+    Write-Host "Verificando serviço Windows Update (wuauserv)..."
+    Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+
+    # ETAPA 1: Buscar e FILTRAR apenas por atualizações que não pedem interação do usuário.
+    Write-Host "ETAPA 1/4: Buscando atualizações silenciosas..."
+    # CORREÇÃO: Removido o parâmetro duplicado -IgnoreUserInput. -Silent faz o trabalho.
+    $updatesFiltradas = Get-WUList -MicrosoftUpdate -NotCategory "Upgrades" -Silent -Verbose
+
+    if (-not $updatesFiltradas) {
+        Write-Host "NENHUMA ATUALIZAÇÃO ENCONTRADA. O sistema está totalmente atualizado."
+        exit 0
+    }
+    Write-Host "Encontradas $($updatesFiltradas.Count) atualizações compatíveis com instalação silenciosa."
+
+    # ETAPA 2: BAIXAR as atualizações filtradas.
+    Write-Host "ETAPA 2/4: Iniciando o DOWNLOAD das atualizações..."
+    $downloadResult = $updatesFiltradas | Get-WUInstall -Download -AcceptAll -Verbose
+    if (-not $downloadResult) {
+        Write-Error "A etapa de download não retornou nenhum resultado ou falhou."
+        exit 1
+    }
+    Write-Host "Download concluído."
+
+    # ETAPA 3: INSTALAR apenas o que foi baixado com sucesso.
+    Write-Host "ETAPA 3/4: Verificando e instalando atualizações baixadas..."
+    $updatesParaInstalar = Get-WUList -MicrosoftUpdate | Where-Object { $_.IsDownloaded -eq $true }
+    
+    if (-not $updatesParaInstalar) {
+        Write-Host "Nenhuma atualização foi baixada com sucesso. Verifique os logs para erros."
+        exit 1
+    }
+    
+    $installResult = $updatesParaInstalar | Get-WUInstall -Install -AcceptAll -Verbose
+    if (-not $installResult) {
+        Write-Error "A etapa de instalação não retornou nenhum resultado ou falhou."
+        exit 1
+    }
+    Write-Host "Instalação concluída."
+
+    # ETAPA 4: Verificar a necessidade de reinicialização e SINALIZAR para o C#.
+    Write-Host "ETAPA 4/4: Verificando status de reinicialização..."
+    if (Get-WURebootStatus) {
+        Write-Host "SINALIZANDO: REINICIALIZAÇÃO NECESSÁRIA."
+        exit 3010
+    } else {
+         Write-Host "Atualizações instaladas. Nenhuma reinicialização necessária nesta rodada."
+         exit 0
+    }
+
+} catch {
+    Write-Error "ERRO FATAL: Falha no ciclo de atualização. Erro: $($_.Exception.Message)"
+    exit 1
+}
+
+
+<#
+[CmdletBinding()]
+param()
+
 # Garante que a conexão com a galeria use o protocolo TLS 1.2, essencial em instalações novas.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -84,3 +157,5 @@ try {
 } finally {
     $ProgressPreference = 'Continue'
 }
+
+#>
