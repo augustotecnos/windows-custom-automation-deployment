@@ -2,6 +2,65 @@
 param()
 
 # --- Configuração Essencial ---
+$ProgressPreference = 'SilentlyContinue'
+try {
+    # Garante que a conexão com a galeria de módulos use TLS 1.2
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+    # 1. VERIFICA E INSTALA O MÓDULO PSWindowsUpdate
+    Write-Host "Verificando a presença do módulo PSWindowsUpdate..."
+    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+        Write-Host "Módulo não encontrado. Instalando..."
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction Stop
+        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false -ErrorAction Stop
+    }
+    Import-Module PSWindowsUpdate -ErrorAction Stop
+    Write-Host "Módulo PSWindowsUpdate carregado."
+
+    # 2. GARANTE QUE O SERVIÇO DO WINDOWS UPDATE ESTÁ ATIVO
+    Write-Host "Verificando serviço Windows Update (wuauserv)..."
+    Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+
+    # 3. BUSCA, BAIXA E INSTALA AS ATUALIZAÇÕES EM UM ÚNICO COMANDO
+    Write-Host "ETAPA ÚNICA: Buscando, baixando e instalando atualizações..."
+    
+    # Usando o alias Install-WindowsUpdate, que é mais intuitivo.
+    # -AcceptAll: Aceita todas as atualizações encontradas.
+    # -IgnoreReboot: Instala e, se precisar reiniciar, NÃO PERGUNTA e continua o script.
+    $installResult = Install-WindowsUpdate -MicrosoftUpdate -NotCategory "Upgrades" -AcceptAll -IgnoreReboot -Verbose
+
+    if (-not $installResult) {
+        Write-Host "NENHUMA ATUALIZAÇÃO ENCONTRADA OU APLICÁVEL. O sistema está atualizado."
+        exit 0
+    }
+    
+    Write-Host "Processo de instalação concluído."
+
+    # 4. VERIFICA SE UMA REINICIALIZAÇÃO É NECESSÁRIA E SINALIZA
+    Write-Host "Verificando status de reinicialização..."
+    # A variável $installResult já contém a informação se o reboot é necessário. É mais eficiente.
+    if ($installResult.RebootRequired -contains $true) {
+        Write-Host "SINALIZANDO: REINICIALIZAÇÃO NECESSÁRIA."
+        exit 3010 # Código de saída padrão para "reboot pending"
+    } else {
+        Write-Host "Atualizações instaladas. Nenhuma reinicialização é necessária."
+        exit 0
+    }
+
+} catch {
+    # Captura qualquer erro fatal durante o processo
+    Write-Error "ERRO FATAL: Falha no ciclo de atualização. Erro: $($_.Exception.Message)"
+    exit 1
+}
+
+
+<#
+
+
+[CmdletBinding()]
+param()
+
+# --- Configuração Essencial ---
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ProgressPreference = 'SilentlyContinue'
 
@@ -20,7 +79,6 @@ try {
 
     # ETAPA 1: Buscar e FILTRAR apenas por atualizações que não pedem interação do usuário.
     Write-Host "ETAPA 1/4: Buscando atualizações silenciosas..."
-    # CORREÇÃO: Removido o parâmetro duplicado -IgnoreUserInput. -Silent faz o trabalho.
     $updatesFiltradas = Get-WUList -MicrosoftUpdate -NotCategory "Upgrades" -Silent -Verbose
 
     if (-not $updatesFiltradas) {
@@ -31,11 +89,7 @@ try {
 
     # ETAPA 2: BAIXAR as atualizações filtradas.
     Write-Host "ETAPA 2/4: Iniciando o DOWNLOAD das atualizações..."
-    $downloadResult = $updatesFiltradas | Get-WUInstall -Download -AcceptAll -Verbose
-    if (-not $downloadResult) {
-        Write-Error "A etapa de download não retornou nenhum resultado ou falhou."
-        exit 1
-    }
+    $updatesFiltradas | Get-WUInstall -Download -AcceptAll -Verbose
     Write-Host "Download concluído."
 
     # ETAPA 3: INSTALAR apenas o que foi baixado com sucesso.
@@ -44,14 +98,12 @@ try {
     
     if (-not $updatesParaInstalar) {
         Write-Host "Nenhuma atualização foi baixada com sucesso. Verifique os logs para erros."
-        exit 1
+        # Se não há o que instalar, consideramos sucesso e saímos com código 0.
+        exit 0
     }
     
-    $installResult = $updatesParaInstalar | Get-WUInstall -Install -AcceptAll -Verbose
-    if (-not $installResult) {
-        Write-Error "A etapa de instalação não retornou nenhum resultado ou falhou."
-        exit 1
-    }
+    # CORREÇÃO APLICADA AQUI: Adicionado -AutoReboot:$false para suprimir o prompt de reinicialização.
+    $updatesParaInstalar | Get-WUInstall -Install -AcceptAll -AutoReboot:$false -Verbose
     Write-Host "Instalação concluída."
 
     # ETAPA 4: Verificar a necessidade de reinicialização e SINALIZAR para o C#.
@@ -69,6 +121,8 @@ try {
     exit 1
 }
 
+
+#>
 
 <#
 [CmdletBinding()]
