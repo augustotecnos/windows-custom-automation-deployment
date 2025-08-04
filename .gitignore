@@ -2,6 +2,7 @@
 # .NET build artifacts
 bin/
 obj/
+*/applications
 
 # Visual Studio files
 .vs/

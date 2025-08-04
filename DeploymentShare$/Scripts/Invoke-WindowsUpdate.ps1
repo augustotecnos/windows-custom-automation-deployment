@@ -1,3 +1,208 @@
+
+<#
++===========================================================+
+|                                                           |
+|                                                  ____     |
+|   __   __   ___   _ __   ___    __ _    ___     |___ \    |
+|   \ \ / /  / _ \ | '__| / __|  / _` |  / _ \      __) |   |
+|    \ V /  |  __/ | |    \__ \ | (_| | | (_) |    / __/    |
+|     \_/    \___| |_|    |___/  \__,_|  \___/    |_____|   |
+|                                                           |
++===========================================================+
+
+#>
+
+
+#Requires -RunAsAdministrator
+[CmdletBinding()]
+param()
+
+# --- Configuração Essencial e Funções ---
+
+# Define o protocolo de segurança para TLS 1.2 para todas as conexões web no script.
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# Oculta as barras de progresso para uma execução mais limpa em ambientes automatizados.
+$ProgressPreference = 'SilentlyContinue'
+
+# Flag para rastrear a necessidade de reinicialização durante todo o processo.
+$global:rebootNeeded = $false
+
+# Função de log para padronizar as mensagens de saída.
+function Write-Log([string]$msg, [ConsoleColor]$color = 'White') {
+    Write-Host "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') :: $msg" -ForegroundColor $color
+}
+
+
+# --- Lógica Principal do Script ---
+
+try {
+    # =================================================================================
+    # ETAPA 1: CICLO COMPLETO DE ATUALIZAÇÕES DO WINDOWS UPDATE
+    # Esta seção garante que TODAS as atualizações sejam instaladas antes de prosseguir.
+    # =================================================================================
+    Write-Log 'INICIANDO ETAPA 1: ATUALIZAÇÕES DO WINDOWS UPDATE' -Color Cyan
+
+    # 1.1. Garante que o módulo PSWindowsUpdate está instalado.
+    Write-Log 'Verificando a presença do módulo PSWindowsUpdate...'
+    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+        Write-Log 'Módulo não encontrado. Instalando PSWindowsUpdate...' -Color Yellow
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction Stop
+        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false -ErrorAction Stop
+        Write-Log 'Módulo PSWindowsUpdate instalado com sucesso.' -Color Green
+    }
+    Import-Module PSWindowsUpdate -ErrorAction Stop
+    Write-Log 'Módulo PSWindowsUpdate carregado.' -Color Green
+
+    # 1.2. Garante que o serviço do Windows Update está ativo.
+    Write-Log 'Verificando o status do serviço Windows Update (wuauserv)...'
+    Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+
+    # 1.3. Loop de instalação: continua buscando e instalando até não haver mais atualizações.
+    $updateCycle = 0
+    do {
+        $updateCycle++
+        Write-Log "Iniciando ciclo de verificação de atualizações nº $updateCycle..." -Color Yellow
+
+        # Verifica se há atualizações disponíveis.
+        $updates = Get-WindowsUpdate -MicrosoftUpdate -NotCategory "Upgrades" -ErrorAction SilentlyContinue
+
+        if ($updates) {
+            Write-Log "Foram encontradas $($updates.Count) atualizações. Iniciando instalação..." -Color Yellow
+            
+            # Instala as atualizações encontradas.
+            $installResult = Install-WindowsUpdate -MicrosoftUpdate -NotCategory "Upgrades" -AcceptAll -IgnoreReboot -Verbose
+            
+            if ($installResult.RebootRequired -contains $true) {
+                Write-Log 'AVISO: Uma reinicialização do sistema é necessária para aplicar todas as atualizações.' -Color Magenta
+                exit 3010 # Código padrão do Windows para "reinicialização pendente".
+            }
+            
+            # Marca que atualizações foram encontradas neste ciclo para continuar o loop.
+            $updatesFoundInThisCycle = $true
+            Write-Log "Ciclo de instalação nº $updateCycle concluído." -Color Green
+        }
+        else {
+            # Nenhuma atualização encontrada, o loop pode parar.
+            $updatesFoundInThisCycle = $false
+            Write-Log 'Nenhuma nova atualização do Windows foi encontrada.' -Color Green
+        }
+    } while ($updatesFoundInThisCycle)
+
+    Write-Log 'ETAPA 1 CONCLUÍDA: O sistema está totalmente atualizado com o Windows Update.' -Color Cyan
+
+    # =================================================================================
+    # ETAPA 2: ATUALIZAÇÃO DA MICROSOFT STORE E INSTALAÇÃO DO WINGET
+    # Esta etapa só é executada após a conclusão bem-sucedida da Etapa 1.
+    # =================================================================================
+    Write-Log 'INICIANDO ETAPA 2: MICROSOFT STORE E WINGET' -Color Cyan
+
+    # 2.1. Solicita a atualização da Microsoft Store e seus aplicativos.
+    Write-Log 'Solicitando verificação de atualizações da Microsoft Store...' -Color Yellow
+    try {
+        Get-CimInstance -Namespace 'Root\cimv2\mdm\dmmap' -ClassName 'MDM_EnterpriseModernAppManagement_AppManagement01' |
+        Invoke-CimMethod -MethodName UpdateScanMethod -ErrorAction Stop | Out-Null
+        Write-Log 'Scan de atualização da Store iniciado com sucesso.' -Color Green
+    }
+    catch {
+        Write-Log "Erro ao solicitar atualização da Store: $_" -Color Red
+    }
+
+    # 2.2. Verifica e instala o Winget, se necessário.
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        Write-Log 'Winget já está instalado.' -Color Green
+    }
+    else {
+        Write-Log 'Winget não encontrado. Iniciando processo de instalação...' -Color Yellow
+        $tmpDir = "$env:TEMP\winget_deps"
+        New-Item -Path $tmpDir -ItemType Directory -Force | Out-Null
+
+        function Install-FromUrl([string]$url, [string]$file, [string]$tempPath) {
+            $filePath = Join-Path -Path $tempPath -ChildPath $file
+            if (-not (Test-Path $filePath)) {
+                Write-Log "Baixando $file..." -Color Yellow
+                Invoke-WebRequest $url -OutFile $filePath -UseBasicParsing -ErrorAction Stop
+            }
+            Write-Log "Instalando $file..." -Color Yellow
+            Add-AppxPackage -Path $filePath -ErrorAction Stop
+        }
+
+        try {
+            # Instala as dependências necessárias.
+            Install-FromUrl 'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx' 'Microsoft.VCLibs.x64.Desktop.appx' $tmpDir
+            Install-FromUrl 'https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx' 'Microsoft.UI.Xaml.2.8.x64.appx' $tmpDir
+
+            # Encontra a URL da última versão do Winget.
+            Write-Log 'Buscando a última versão do Winget no GitHub...'
+            $latestRelease = Invoke-RestMethod 'https://api.github.com/repos/microsoft/winget-cli/releases/latest' -UseBasicParsing
+            $wingetUrl = $latestRelease.assets | Where-Object name -Like '*DesktopAppInstaller*msixbundle' | Select-Object -First 1 -ExpandProperty browser_download_url
+
+            if (-not $wingetUrl) { throw "Não foi possível encontrar o pacote de instalação do Winget (*.msixbundle)." }
+
+            # Instala o Winget.
+            Install-FromUrl $wingetUrl 'winget.msixbundle' $tmpDir
+
+            # Recarrega a variável de ambiente PATH para encontrar o novo comando.
+            $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
+            
+            if (Get-Command winget -ErrorAction SilentlyContinue) {
+                Write-Log 'Winget instalado com sucesso.' -Color Green
+            } else {
+                Write-Log 'ERRO: Winget foi instalado, mas o comando não está disponível nesta sessão. Uma nova sessão de terminal pode ser necessária.' -Color Red
+            }
+        }
+        catch {
+            # Captura erros específicos da instalação do Winget.
+            Write-Log "ERRO durante a instalação do Winget: $_" -Color Red
+        }
+        finally {
+            # Limpa os arquivos temporários.
+            if (Test-Path $tmpDir) {
+                Write-Log "Limpando diretório temporário..."
+                Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
+}
+catch {
+    # Captura qualquer erro fatal durante o processo
+    Write-Log "ERRO FATAL NO SCRIPT: Falha no ciclo de atualização. Detalhes: $($_.Exception.Message)" -Color Red
+    exit 1
+}
+
+# --- Verificação Final e Código de Saída ---
+Write-Log 'SCRIPT CONCLUÍDO.' -Color Cyan
+
+if ($global:rebootNeeded) {
+    Write-Log 'AVISO: Uma reinicialização do sistema é necessária para aplicar todas as atualizações.' -Color Magenta
+    exit 3010 # Código padrão do Windows para "reinicialização pendente".
+}
+else {
+    Write-Log 'O sistema está atualizado e nenhuma reinicialização é necessária.' -Color Green
+    exit 0 # Sucesso.
+}
+
+
+
+
+
+
+
+
+<#
+
++=======================================================+
+|                                                       |
+|                                                  _    |
+|   __   __   ___   _ __   ___    __ _    ___     / |   |
+|   \ \ / /  / _ \ | '__| / __|  / _` |  / _ \    | |   |
+|    \ V /  |  __/ | |    \__ \ | (_| | | (_) |   | |   |
+|     \_/    \___| |_|    |___/  \__,_|  \___/    |_|   |
+|                                                       |
++=======================================================+
+
+
+
 [CmdletBinding()]
 param()
 
@@ -51,165 +256,6 @@ try {
     # Captura qualquer erro fatal durante o processo
     Write-Error "ERRO FATAL: Falha no ciclo de atualização. Erro: $($_.Exception.Message)"
     exit 1
-}
-
-
-<#
-
-
-[CmdletBinding()]
-param()
-
-# --- Configuração Essencial ---
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$ProgressPreference = 'SilentlyContinue'
-
-try {
-    Write-Host "Verificando a presença do módulo PSWindowsUpdate..."
-    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-        Write-Host "Módulo não encontrado. Instalando..."
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction Stop
-        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false -ErrorAction Stop
-    }
-    Import-Module PSWindowsUpdate -ErrorAction Stop
-    Write-Host "Módulo PSWindowsUpdate carregado."
-
-    Write-Host "Verificando serviço Windows Update (wuauserv)..."
-    Start-Service -Name wuauserv -ErrorAction SilentlyContinue
-
-    # ETAPA 1: Buscar e FILTRAR apenas por atualizações que não pedem interação do usuário.
-    Write-Host "ETAPA 1/4: Buscando atualizações silenciosas..."
-    $updatesFiltradas = Get-WUList -MicrosoftUpdate -NotCategory "Upgrades" -Silent -Verbose
-
-    if (-not $updatesFiltradas) {
-        Write-Host "NENHUMA ATUALIZAÇÃO ENCONTRADA. O sistema está totalmente atualizado."
-        exit 0
-    }
-    Write-Host "Encontradas $($updatesFiltradas.Count) atualizações compatíveis com instalação silenciosa."
-
-    # ETAPA 2: BAIXAR as atualizações filtradas.
-    Write-Host "ETAPA 2/4: Iniciando o DOWNLOAD das atualizações..."
-    $updatesFiltradas | Get-WUInstall -Download -AcceptAll -Verbose
-    Write-Host "Download concluído."
-
-    # ETAPA 3: INSTALAR apenas o que foi baixado com sucesso.
-    Write-Host "ETAPA 3/4: Verificando e instalando atualizações baixadas..."
-    $updatesParaInstalar = Get-WUList -MicrosoftUpdate | Where-Object { $_.IsDownloaded -eq $true }
-    
-    if (-not $updatesParaInstalar) {
-        Write-Host "Nenhuma atualização foi baixada com sucesso. Verifique os logs para erros."
-        # Se não há o que instalar, consideramos sucesso e saímos com código 0.
-        exit 0
-    }
-    
-    # CORREÇÃO APLICADA AQUI: Adicionado -AutoReboot:$false para suprimir o prompt de reinicialização.
-    $updatesParaInstalar | Get-WUInstall -Install -AcceptAll -AutoReboot:$false -Verbose
-    Write-Host "Instalação concluída."
-
-    # ETAPA 4: Verificar a necessidade de reinicialização e SINALIZAR para o C#.
-    Write-Host "ETAPA 4/4: Verificando status de reinicialização..."
-    if (Get-WURebootStatus) {
-        Write-Host "SINALIZANDO: REINICIALIZAÇÃO NECESSÁRIA."
-        exit 3010
-    } else {
-         Write-Host "Atualizações instaladas. Nenhuma reinicialização necessária nesta rodada."
-         exit 0
-    }
-
-} catch {
-    Write-Error "ERRO FATAL: Falha no ciclo de atualização. Erro: $($_.Exception.Message)"
-    exit 1
-}
-
-
-#>
-
-<#
-[CmdletBinding()]
-param()
-
-# Garante que a conexão com a galeria use o protocolo TLS 1.2, essencial em instalações novas.
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-Write-Host "Verificando a presença do módulo PSWindowsUpdate, a ferramenta para automação do Windows Update..."
-try {
-    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-        Write-Host "Módulo não encontrado. Tentando instalar a partir da Galeria do PowerShell..."
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction Stop
-        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false -ErrorAction Stop
-        Write-Host "Módulo PSWindowsUpdate instalado com sucesso."
-    }
-    Import-Module PSWindowsUpdate -ErrorAction Stop
-    Write-Host "Módulo PSWindowsUpdate carregado e pronto para uso."
-} catch {
-    Write-Error "ERRO FATAL: Não foi possível instalar ou importar o módulo PSWindowsUpdate. Verifique a conexão com a internet. Erro: $($_.Exception.Message)"
-    exit 1
-}
-
-Write-Host "Iniciando busca por novas atualizações do Windows Update..."
-$ProgressPreference = 'SilentlyContinue'
-try {
-    # ETAPA ADICIONAL: Garantir que o serviço do Windows Update (wuauserv) está em execução.
-    Write-Host "Verificando o status do serviço Windows Update (wuauserv)..."
-    $wuService = Get-Service -Name wuauserv -ErrorAction SilentlyContinue
-    if ($wuService -and $wuService.Status -ne 'Running') {
-        Write-Host "Serviço não está em execução. Tentando iniciar o serviço wuauserv..."
-        Start-Service -Name wuauserv -ErrorAction Stop
-        Start-Sleep -Seconds 5 
-        Write-Host "Serviço wuauserv iniciado com sucesso."
-    } elseif (-not $wuService) {
-         Write-Error "ERRO CRÍTICO: O serviço Windows Update (wuauserv) não foi encontrado no sistema."
-         exit 1
-    } else {
-        Write-Host "Serviço wuauserv já está em execução."
-    }
-
-    # --- NOVA LÓGICA EM ETAPAS ---
-
-    # ETAPA 1: BUSCAR a lista de atualizações disponíveis.
-    Write-Host "ETAPA 1/3: Buscando todas as atualizações disponíveis..."
-    $updates = Get-WUList -MicrosoftUpdate -NotCategory "Upgrades" -Verbose
-    
-    if (-not $updates) {
-        Write-Host "Nenhuma atualização nova (exceto Upgrades) foi encontrada. O sistema já está atualizado."
-        exit 0
-    }
-
-    Write-Host "Foram encontradas $($updates.Count) atualizações para processar."
-
-    # ETAPA 2: BAIXAR as atualizações encontradas.
-    Write-Host "ETAPA 2/3: Iniciando o DOWNLOAD das atualizações..."
-    $downloadResult = $updates | Get-WUInstall -AcceptAll -Download -Verbose
-    if (-not $downloadResult) {
-        Write-Error "ERRO: A etapa de download não retornou nenhum resultado ou falhou."
-        exit 1
-    }
-    Write-Host "DOWNLOAD concluído."
-
-    # ETAPA 3: INSTALAR as atualizações já baixadas.
-    Write-Host "ETAPA 3/3: Iniciando a INSTALAÇÃO das atualizações..."
-    $installResult = $updates | Get-WUInstall -AcceptAll -Install -Verbose
-    if (-not $installResult) {
-        Write-Error "ERRO: A etapa de instalação não retornou nenhum resultado ou falhou."
-        exit 1
-    }
-    Write-Host "INSTALAÇÃO concluída."
-
-    # Verificação final da necessidade de reinicialização.
-    $rebootNecessario = $installResult | Where-Object { $_.RebootRequired -eq $true }
-
-    if ($rebootNecessario) {
-        Write-Host "ATENÇÃO: Uma ou mais atualizações foram instaladas e uma REINICIALIZAÇÃO é necessária para continuar."
-        exit 3010
-    } else {
-        Write-Host "Sucesso. Todas as atualizações disponíveis foram processadas e nenhuma reinicialização é necessária."
-        exit 0
-    }
-} catch {
-    Write-Error "ERRO FATAL: Falha durante o processo de instalação do Windows Update. Erro: $($_.Exception.Message)"
-    exit 1
-} finally {
-    $ProgressPreference = 'Continue'
 }
 
 #>

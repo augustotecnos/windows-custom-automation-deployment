@@ -1,0 +1,46 @@
+# Copyright (c) 1993-2009 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP for Windows.
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or following the machine name denoted by a '#' symbol.
+#
+# For example:
+#
+#      102.54.94.97     rhino.acme.com          # source server
+#       38.25.63.10     x.acme.com              # x client host
+
+# localhost name resolution is handled within DNS itself.
+#	127.0.0.1       localhost
+#	::1             localhost
+192.168.230.129 centraldeservicos.banese.com.br
+192.168.230.130 centraldeservicos2.banese.com.br
+192.168.230.131 pbc003
+192.168.230.132 sccfront.banese.com.br
+192.168.230.133 aplicativos.banese.com.br
+192.168.230.134 servicedesk.banese.com.br 
+192.168.230.135 aplicativosadc.banese.com.br 
+192.168.230.139 pbes447.banese.com.br
+192.168.230.136 adc.banesecard.com.br
+192.168.230.142 gestaobiometria.banese.com.br
+192.168.230.133 scciweb.banese.com.br
+192.168.230.138 seconsig.com.br
+0.0.0.0 mc.corel.com
+0.0.0.0 apps.corel.com
+0.0.0.0 origin-mc.corel.com
+0.0.0.0 iws.corel.com
+0.0.0.0 compute-1.amazonaws.com
+0.0.0.0 ipm.corel.com
+0.0.0.0 dev1.ipm.corel.public.corel.net
+
+
+127.0.0.1 ns3.webvoipphone.com
+127.0.0.1 ns4.webvoipphone.com
+
+127.0.0.1 ns4.webvoipphone.com

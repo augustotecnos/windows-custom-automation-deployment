@@ -1,8 +1,25 @@
 {
   "NomePerfil": "Matriz - Financeiro",
   "WingetPackages": [
+   "7zip.7zip",
+    "Microsoft.WindowsTerminal",
+    "Git.Git",
+    "Microsoft.PowerToys",
+    "ShareX.ShareX",
+    "pdfforge.PDFCreator",
     "Adobe.Acrobat.Reader.64-bit",
-    "Google.Chrome"
+    "Oracle.JavaRuntimeEnvironment",
+    "Notepad++.Notepad++",
+    "Google.Chrome",
+    "GNU.Nano",
+    "NGWIN.PicPick",
+    "WhatsApp.WhatsApp",
+    "Microsoft.VCRedist.2015+.x64",
+    "Microsoft.VCRedist.2012.x64",
+    "Microsoft.VCRedist.2013.x64",
+    "RustDesk.RustDesk",
+    "AnyDeskSoftwareGmbH.AnyDesk",
+    "VideoLAN.VLC"
   ],
   "LegacyInstallers": [
     {

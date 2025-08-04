@@ -8,24 +8,50 @@
     "Microsoft.WindowsTerminal",
     "Git.Git",
     "Microsoft.PowerToys",
-    "ShareX.ShareX"
+    "ShareX.ShareX",
+    "pdfforge.PDFCreator",
+    "Adobe.Acrobat.Reader.64-bit",
+    "Oracle.JavaRuntimeEnvironment",
+    "Notepad++.Notepad++",
+    "Google.Chrome",
+    "GNU.Nano",
+    "NGWIN.PicPick",
+    "WhatsApp.WhatsApp",
+    "Microsoft.VCRedist.2015+.x64",
+    "Microsoft.VCRedist.2012.x64",
+    "Microsoft.VCRedist.2013.x64",
+    "RustDesk.RustDesk",
+    "AnyDeskSoftwareGmbH.AnyDesk",
+    "VideoLAN.VLC"
   ],
   "LegacyInstaller": [
     {
-      "Nome": "Sistema Interno de Chamados (HelpDesk Admin Console)",
-      "Path": "\\seu-servidor\\DeploymentShare$\\Applications\\HelpDeskSystem_Admin_v2.1.msi",
+      "Nome": "Plataforma de Correspondentes",
+      "Path": "c:\\SUPORTE\\Applications\\APlataforma de Correspondentes - V1.2.0.msi",
       "Tipo": "msi",
-      "Argumentos": "/qn /norestart"
+      "Argumentos": "/quiet /NORESTART"
     },
     {
-      "Nome": "Cliente de Banco de Dados Oracle (SQL Developer)",
-      "Path": "\\seu-servidor\\DeploymentShare$\\Applications\\OracleClient_Setup.exe",
+      "Nome": "Bizagi Modelagem de Processos",
+      "Path": "c:\\SUPORTE\\Applications\\bizagi-process-modeler-2-7-es-en-win.exe",
       "Tipo": "exe",
-      "Argumentos": "/S /VERYSILENT /NORESTART"
+      "Argumentos": "/S /f1c:\\SUPORTE\\Applications\\intalador.iss"
     },
     {
-      "Nome": "Script de Mapeamento de Pastas de Rede - TI",
-      "Path": "\\seu-servidor\\DeploymentShare$\\Scripts\\Map-TI-Drives.bat",
+      "Nome": "Extraindo Ms Office",
+      "Path": "c:\\SUPORTE\\Applications\\7za.exe",
+      "Tipo": "exe",
+      "Argumentos": "x  SW_DVD5_Office_2013_W32_Brazilian_MLF_X18-53886.zip  -o./ -y -r"
+    },
+    {
+      "Nome": "Instalando ULtraVNC",
+      "Path": "c:\\SUPORTE\\Applications\\UltraVNC_1_2_23_X64_Setup.exe",
+      "Tipo": "exe",
+      "Argumentos": "/verysilent /loadinf=\"c:\\SUPORTE\\Applications\\uvncinstall.inf\" /log"
+    },
+    {
+      "Nome": "Script de Configuração senha Anydesk - TI",
+      "Path": "\\seu-servidor\\DeploymentShare$\\Scripts\\set-password-anydesk.bat",
       "Tipo": "bat",
       "Argumentos": ""
     }
@@ -34,9 +60,9 @@
     "\\servidor-impressao\\IMP_TI_COLOR_A3",
     "\\servidor-impressao\\PLOTTER_PROJETOS_HP"
   ],
-  "HostsFile": "hosts.desenvolvimento",
+  "HostsFile": "hosts",
   "VpnConfig": {
-    "InstallerPath": "\\seu-servidor\\DeploymentShare$\\Applications\\VPN\\OpenVPN_2.5.8_amd64.msi",
+    "InstallerPath": "\\seu-servidor\\DeploymentShare$\\Applications\\VPN\\penvpn-install-2.4.7-I607-Win10.exe",
     "ConfigFilePath": "\\seu-servidor\\DeploymentShare$\\Config\\VPN\\config_ti_dev.ovpn"
   },
   "LocalGroups": [

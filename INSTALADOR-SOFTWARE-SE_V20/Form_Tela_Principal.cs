@@ -91,6 +91,7 @@ using System.Windows.Forms;
 
             AtualizarStatusProgresso("Conectado ao servidor. Carregando opções...");
             var masterConfig = CarregarConfiguracoesDaRede();
+            //System.Windows.Forms.MessageBox.Show(AppConfig.DeploymentSharePath);
             if (masterConfig == null)
             {
                 AtivarModoDeAlerta("FALHA DE CONFIGURAÇÃO", "Arquivo 'master_config.json' não encontrado ou inválido.");
@@ -111,10 +112,12 @@ using System.Windows.Forms;
             {
                 var file = Path.Combine(AppConfig.DeploymentSharePath, "Config", "master_config.json");
                 return JsonSerializer.Deserialize<MasterConfig>(File.ReadAllText(file));
+                
             }
             catch (Exception ex)
             {
                 AtualizarStatusProgresso($"ERRO master_config: {ex.Message}");
+                System.Windows.Forms.MessageBox.Show(ex.Message);
                 return null;
             }
         }
@@ -258,10 +261,10 @@ using System.Windows.Forms;
                 ["EtapaAtual"]                = "Iniciar_Nomenclatura"
             };
         
-            //_gerenciadorDeEstado.SalvarEstadoCompleto(estadoInicial);
+            _gerenciadorDeEstado.SalvarEstadoCompleto(estadoInicial);
             pnlConfiguracao.Visible = false;
-            ContinuarProcesso(estadoInicial);
-
+            //ContinuarProcesso(estadoInicial);
+            Application.Exit();
         }
 
         // ------------------------------------------------------------------

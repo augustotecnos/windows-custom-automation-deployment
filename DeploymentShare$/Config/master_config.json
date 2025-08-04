@@ -23,24 +23,48 @@
   ],
   "Setores": [
     {
-      "NomeExibicao": "TI - Tecnologia",
-      "Id": "ti"
+      "NomeExibicao": "Administrativo",
+      "Id": "adm"
     },
     {
-      "NomeExibicao": "Financeiro",
-      "Id": "financeiro"
+      "NomeExibicao": "Comercial",
+      "Id": "comercial"
     },
     {
-      "NomeExibicao": "Vendas e Comercial",
-      "Id": "vendas"
+      "NomeExibicao": "Comercial Técnico",
+      "Id": "comercial-tecnico"
+    },
+    {
+      "NomeExibicao": "Diretoria",
+      "Id": "diretoria"
+    },
+    {
+      "NomeExibicao": "Gestão de Corresponndentes",
+      "Id": "gestao-corresp"
+    },
+    {
+      "NomeExibicao": "Monitoramento",
+      "Id": "monitoramento"
+    },
+    {
+      "NomeExibicao": "Qualidade",
+      "Id": "qualidade"
     },
     {
       "NomeExibicao": "Recursos Humanos",
       "Id": "rh"
     },
     {
-      "NomeExibicao": "Operacional Padrão",
-      "Id": "operacional"
+      "NomeExibicao": "Tecnologia",
+      "Id": "ti"
+    },
+    {
+      "NomeExibicao": "Transacional",
+      "Id": "transacional"
+    },
+    {
+      "NomeExibicao": "TvIndoor",
+      "Id": "tvindoor"
     }
   ],
   "UsuariosFinais": [
