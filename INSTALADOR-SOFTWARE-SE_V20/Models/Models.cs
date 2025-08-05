@@ -58,7 +58,7 @@ namespace INSTALADOR_SOFTWARE_SE.Models
     {
         public string? NomePerfil { get; set; }
         public List<string> WingetPackages { get; set; } = new();
-        public List<LegacyInstaller> LegacyInstallers { get; set; } = new();
+        public List<LegacyInstaller> LegacyInstaller { get; set; } = new();
         public List<string> Printers { get; set; } = new();
         public Dictionary<string, string>? HostsFile { get; set; }
         public VpnConfig? VpnConfig { get; set; }

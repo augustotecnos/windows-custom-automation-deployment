@@ -1,7 +1,10 @@
 {
-  "NomePerfil": "Matriz - Financeiro",
+  "NomePerfil": "Matriz - Padrão de TI",
   "WingetPackages": [
-   "7zip.7zip",
+    "Microsoft.VisualStudioCode",
+    "Docker.DockerDesktop",
+    "Postman.Postman",
+    "7zip.7zip",
     "Microsoft.WindowsTerminal",
     "Git.Git",
     "Microsoft.PowerToys",
@@ -21,19 +24,46 @@
     "AnyDeskSoftwareGmbH.AnyDesk",
     "VideoLAN.VLC"
   ],
-  "LegacyInstallers": [
+  "LegacyInstaller": [
     {
-      "Nome": "Sistema Financeiro Legacy",
-      "Path": "\\seu-servidor\\DeploymentShare$\\Applications\\FinanceSystem_v1.0.msi",
+      "Nome": "Plataforma de Correspondentes",
+      "Path": "%share%\\Applications\\APlataforma de Correspondentes - V1.2.0.msi",
       "Tipo": "msi",
-      "Argumentos": "/qn /norestart"
+      "Argumentos": "/quiet /NORESTART"
+    },
+    {
+      "Nome": "Bizagi Modelagem de Processos",
+      "Path": "%share%\\Applications\\bizagi-process-modeler-2-7-es-en-win.exe",
+      "Tipo": "exe",
+      "Argumentos": "/S /f1c:\\SUPORTE\\Applications\\intalador.iss"
+    },
+    {
+      "Nome": "Extraindo Ms Office",
+      "Path": "%share%\\Applications\\7za.exe",
+      "Tipo": "exe",
+      "Argumentos": "x  SW_DVD5_Office_2013_W32_Brazilian_MLF_X18-53886.zip  -o./ -y -r"
+    },
+    {
+      "Nome": "Instalando ULtraVNC",
+      "Path": "%share%\\Applications\\UltraVNC_1_2_23_X64_Setup.exe",
+      "Tipo": "exe",
+      "Argumentos": "/verysilent /loadinf=\"%share%\\Applications\\uvncinstall.inf\" /log"
+    },
+    {
+      "Nome": "Script de Configuração senha Anydesk - TI",
+      "Path": "%share%\\Scripts\\set-password-anydesk.bat",
+      "Tipo": "bat",
+      "Argumentos": ""
     }
   ],
   "Printers": [
-    "\\servidor-impressao\\IMP_FIN_CONTABIL",
-    "\\servidor-impressao\\IMP_FIN_ETIQUETAS"
+    "\\servidor-impressao\\IMP_TI_COLOR_A3",
+    "\\servidor-impressao\\PLOTTER_PROJETOS_HP"
   ],
+  "VpnConfig": {
+    "InstallerPath": "\\seu-servidor\\DeploymentShare$\\Applications\\VPN\\penvpn-install-2.4.7-I607-Win10.exe",
+    "ConfigFilePath": "\\seu-servidor\\DeploymentShare$\\Config\\VPN\\config_ti_dev.ovpn"
+  },
   "LocalGroups": [
     "Remote Desktop Users"
-  ]
-}
+  ]}
